@@ -310,9 +310,7 @@ public class DatosDAO {
       b.setCantidad(rs.getDouble("saldosiinvcantidad"));
       b.setCostoUnitario(rs.getDouble("saldosiinvcosto"));
     }
-
     rs.close();
-
     conP.cerrar();
     return b;
   }
@@ -335,7 +333,6 @@ public class DatosDAO {
       b.setCostoTotal(rs.getDouble("kardexcostototalstock"));
     }
     rs.close();
-
     conP.cerrar();
     return b;
   }
@@ -399,7 +396,6 @@ public class DatosDAO {
       aMats.add(mt);
     }
     rs.close();
-
     conP.cerrar();
     return aMats;
   }

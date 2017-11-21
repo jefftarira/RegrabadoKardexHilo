@@ -11,8 +11,8 @@ public class RegrabadoKardex {
     ArrayList<Movimiento> aMovs = null;
 
     Kardex k;
-    final Date fechaIni = new Date((2017 - 1900), 8, 1);
-    final Date fechaFin = new Date((2017 - 1900), 8, 30);
+    final Date fechaIni = new Date((2017 - 1900), 9, 1);
+    final Date fechaFin = new Date((2017 - 1900), 10, 30);
 
     DatosDAO db = new DatosDAO();
     aMovs = db.getMovimientos(fechaIni, fechaFin);
