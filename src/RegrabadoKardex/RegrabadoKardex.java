@@ -2,17 +2,27 @@ package RegrabadoKardex;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class RegrabadoKardex {
 
-  public static void main(String arg[]) throws ClassNotFoundException, SQLException, InterruptedException {
+  public static void main(String arg[]) throws ClassNotFoundException, SQLException, InterruptedException, ParseException {
     final ArrayList<Kardex> aDocs = new ArrayList<>();
     ArrayList<Movimiento> aMovs = null;
 
-    Kardex k;
-    final Date fechaIni = new Date((2017 - 1900), 9, 1);
-    final Date fechaFin = new Date((2017 - 1900), 10, 30);
+    String iniDate = "01-09-2017";
+    String finDate = "30-11-2017";
+
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+    java.util.Date dateIni = sdf.parse(iniDate);
+    Date fechaIni = new Date(dateIni.getTime());
+
+    java.util.Date dateFin = sdf.parse(finDate);
+    Date fechaFin = new Date(dateFin.getTime());
 
     DatosDAO db = new DatosDAO();
     aMovs = db.getMovimientos(fechaIni, fechaFin);
@@ -51,8 +61,8 @@ public class RegrabadoKardex {
         t3.start();
       }
 
-      if (t1 != null) {        
-        t1.join();        
+      if (t1 != null) {
+        t1.join();
         aDocs.addAll(rp1.getResultado());
       }
 
