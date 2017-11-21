@@ -1,8 +1,9 @@
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
-public class Kardex implements Comparable<Kardex>{
+public class Kardex implements Comparable<Kardex> {
 
   private String kardexcodigodiv;
   private String kardexanno;
@@ -22,16 +23,16 @@ public class Kardex implements Comparable<Kardex>{
   private String kardexdescripcion;
   private String kardextipo;
   private String kardexcodigoven1;
-  private Double kardexpreciocompra;
-  private Double kardexprecioventa;
-  private Double kardexvalordescuento;
-  private Double kardexcantidad;
-  private Double kardexcostopromedio;
-  private Double kardexcostototal;
-  private Double kardexstock;
-  private Double kardexcantidad_a;
-  private Double kardexcostopromedio_a;
-  private Double kardexcostototalstock;
+  private BigDecimal kardexpreciocompra;
+  private BigDecimal kardexprecioventa;
+  private BigDecimal kardexvalordescuento;
+  private BigDecimal kardexcantidad;
+  private BigDecimal kardexcostopromedio;
+  private BigDecimal kardexcostototal;
+  private BigDecimal kardexstock;
+  private BigDecimal kardexcantidad_a;
+  private BigDecimal kardexcostopromedio_a;
+  private BigDecimal kardexcostototalstock;
   private String kardexcreateuser;
   private Date kardexcreatedate;
   private String kardexcreatepgm;
@@ -46,10 +47,10 @@ public class Kardex implements Comparable<Kardex>{
   public Kardex(String kardexcodigodiv, String kardexanno, String kardextipotrx, int kardexnumero,
           int kardexlinea, int kardexcodigosec, String kardexorden, Date kardexfecha, String kardexhora,
           String productoscodigo, String tbodcodigo, String kardexlote, Date kardexcaducidad,
-          String kardexdescripcion, String kardextipo, String kardexcodigoven1, Double kardexpreciocompra,
-          Double kardexprecioventa, Double kardexvalordescuento, Double kardexcantidad,
-          Double kardexcostopromedio, Double kardexcostototal, Double kardexstock, Double kardexcantidad_a,
-          Double kardexcostopromedio_a, Double kardexcostototalstock, String kardexcreateuser,
+          String kardexdescripcion, String kardextipo, String kardexcodigoven1, BigDecimal kardexpreciocompra,
+          BigDecimal kardexprecioventa, BigDecimal kardexvalordescuento, BigDecimal kardexcantidad,
+          BigDecimal kardexcostopromedio, BigDecimal kardexcostototal, BigDecimal kardexstock, BigDecimal kardexcantidad_a,
+          BigDecimal kardexcostopromedio_a, BigDecimal kardexcostototalstock, String kardexcreateuser,
           Date kardexcreatedate, String kardexcreatepgm, String kardexupdateuser, Date kardexupdatedate,
           String kardexupdatetime, String kardexupdatepgm, String kardexusuario) {
 
@@ -88,14 +89,13 @@ public class Kardex implements Comparable<Kardex>{
     this.setKardexupdatepgm(kardexupdatepgm);
     this.setKardexusuario(kardexusuario);
   }
-  
-  
+
 //  Seleccion de productos
   public Kardex(String kardexcodigodiv, String kardexanno, String kardextipotrx, int kardexnumero,
-          int kardexlinea, String kardexorden, Date kardexfecha,String productotodo, String productoscodigo, String tbodcodigo,
-          String tbodcodigo2, String kardexlote, Date kardexcaducidad, String kardexdescripcion, String kardextipo, 
-          String kardexcodigoven1, Double kardexpreciocompra, Double kardexprecioventa, Double kardexvalordescuento,
-          Double kardexcantidad, String kardexusuario, int kardexnumref, int kardexregorden) {
+          int kardexlinea, String kardexorden, Date kardexfecha, String productotodo, String productoscodigo, String tbodcodigo,
+          String tbodcodigo2, String kardexlote, Date kardexcaducidad, String kardexdescripcion, String kardextipo,
+          String kardexcodigoven1, BigDecimal kardexpreciocompra, BigDecimal kardexprecioventa, BigDecimal kardexvalordescuento,
+          BigDecimal kardexcantidad, String kardexusuario, int kardexnumref, int kardexregorden) {
 
     this.setKardexcodigodiv(kardexcodigodiv);
     this.setKardexanno(kardexanno);
@@ -258,83 +258,83 @@ public class Kardex implements Comparable<Kardex>{
     this.kardexcodigoven1 = kardexcodigoven1;
   }
 
-  public Double getKardexpreciocompra() {
+  public BigDecimal getKardexpreciocompra() {
     return kardexpreciocompra;
   }
 
-  public void setKardexpreciocompra(Double kardexpreciocompra) {
+  public void setKardexpreciocompra(BigDecimal kardexpreciocompra) {
     this.kardexpreciocompra = kardexpreciocompra;
   }
 
-  public Double getKardexprecioventa() {
+  public BigDecimal getKardexprecioventa() {
     return kardexprecioventa;
   }
 
-  public void setKardexprecioventa(Double kardexprecioventa) {
+  public void setKardexprecioventa(BigDecimal kardexprecioventa) {
     this.kardexprecioventa = kardexprecioventa;
   }
 
-  public Double getKardexvalordescuento() {
+  public BigDecimal getKardexvalordescuento() {
     return kardexvalordescuento;
   }
 
-  public void setKardexvalordescuento(Double kardexvalordescuento) {
+  public void setKardexvalordescuento(BigDecimal kardexvalordescuento) {
     this.kardexvalordescuento = kardexvalordescuento;
   }
 
-  public Double getKardexcantidad() {
+  public BigDecimal getKardexcantidad() {
     return kardexcantidad;
   }
 
-  public void setKardexcantidad(Double kardexcantidad) {
+  public void setKardexcantidad(BigDecimal kardexcantidad) {
     this.kardexcantidad = kardexcantidad;
   }
 
-  public Double getKardexcostopromedio() {
+  public BigDecimal getKardexcostopromedio() {
     return kardexcostopromedio;
   }
 
-  public void setKardexcostopromedio(Double kardexcostopromedio) {
+  public void setKardexcostopromedio(BigDecimal kardexcostopromedio) {
     this.kardexcostopromedio = kardexcostopromedio;
   }
 
-  public Double getKardexcostototal() {
+  public BigDecimal getKardexcostototal() {
     return kardexcostototal;
   }
 
-  public void setKardexcostototal(Double kardexcostototal) {
+  public void setKardexcostototal(BigDecimal kardexcostototal) {
     this.kardexcostototal = kardexcostototal;
   }
 
-  public Double getKardexstock() {
+  public BigDecimal getKardexstock() {
     return kardexstock;
   }
 
-  public void setKardexstock(Double kardexstock) {
+  public void setKardexstock(BigDecimal kardexstock) {
     this.kardexstock = kardexstock;
   }
 
-  public Double getKardexcantidad_a() {
+  public BigDecimal getKardexcantidad_a() {
     return kardexcantidad_a;
   }
 
-  public void setKardexcantidad_a(Double kardexcantidad_a) {
+  public void setKardexcantidad_a(BigDecimal kardexcantidad_a) {
     this.kardexcantidad_a = kardexcantidad_a;
   }
 
-  public Double getKardexcostopromedio_a() {
+  public BigDecimal getKardexcostopromedio_a() {
     return kardexcostopromedio_a;
   }
 
-  public void setKardexcostopromedio_a(Double kardexcostopromedio_a) {
+  public void setKardexcostopromedio_a(BigDecimal kardexcostopromedio_a) {
     this.kardexcostopromedio_a = kardexcostopromedio_a;
   }
 
-  public Double getKardexcostototalstock() {
+  public BigDecimal getKardexcostototalstock() {
     return kardexcostototalstock;
   }
 
-  public void setKardexcostototalstock(Double kardexcostototalstock) {
+  public void setKardexcostototalstock(BigDecimal kardexcostototalstock) {
     this.kardexcostototalstock = kardexcostototalstock;
   }
 
@@ -401,8 +401,8 @@ public class Kardex implements Comparable<Kardex>{
   public void setKardexusuario(String kardexusuario) {
     this.kardexusuario = kardexusuario;
   }
-  
-   public String getProductotodo() {
+
+  public String getProductotodo() {
     return productotodo;
   }
 
@@ -429,11 +429,15 @@ public class Kardex implements Comparable<Kardex>{
   @Override
   public int compareTo(Kardex o) {
     int resultado = kardexfecha.compareTo(o.getKardexfecha());
-    if(resultado != 0){return resultado;}
-    
+    if (resultado != 0) {
+      return resultado;
+    }
+
     resultado = Integer.compare(kardexregorden, o.getKardexregorden());
-    if(resultado != 0){return resultado;}
-    
+    if (resultado != 0) {
+      return resultado;
+    }
+
     resultado = Integer.compare(kardexnumero, o.getKardexnumero());
     return resultado;
   }

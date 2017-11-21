@@ -1,5 +1,6 @@
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -40,9 +41,9 @@ public class RegrabadoProducto implements Runnable {
 
 //    Comprueba saldo inicial
       int existe = 0;
-      Double saldo = 0.00;
-      Double costoU = 0.00;
-      Double costoT = 0.00;
+      BigDecimal saldo = BigDecimal.ZERO;
+      BigDecimal costoU = BigDecimal.ZERO;
+      BigDecimal costoT = BigDecimal.ZERO;
       for (Bodega b : aSaldosIni) {
         if (b.getCodigo().equals(k.getTbodcodigo().trim())) {
           existe = 1;
@@ -60,19 +61,19 @@ public class RegrabadoProducto implements Runnable {
         costoT = saldoIniBod.getCostoTotal();
       }
 
-//*******************
-//       Calcula Costos
+      //************************************     Calcula Costos   ************************************ \\
       if (k.getKardextipotrx().trim().equals("NTE")) {
 
-        k.setKardexstock(saldo + k.getKardexcantidad());
+        k.setKardexstock(saldo.add(k.getKardexcantidad()));
         k.setKardexcostopromedio(costoU);
-        if (k.getKardexstock() <= 0) {
-          k.setKardexcostototalstock(0 * k.getKardexcostopromedio());
+
+        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == -1 || k.getKardexstock().compareTo(BigDecimal.ZERO) == 0) {
+          k.setKardexcostototalstock(k.getKardexcostopromedio().multiply(BigDecimal.ZERO));
         } else {
-          k.setKardexcostototalstock(k.getKardexstock() * k.getKardexcostopromedio());
+          k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
         }
         k.setKardexpreciocompra(k.getKardexcostopromedio());
-        k.setKardexcostototal((k.getKardexcantidad() * -1) * costoU);
+        k.setKardexcostototal(costoU.multiply(k.getKardexcantidad().negate()));
         k.setKardexcantidad_a(saldo);
         k.setKardexcostopromedio_a(costoU);
         saldo = k.getKardexstock();
@@ -109,16 +110,16 @@ public class RegrabadoProducto implements Runnable {
                   k.getKardexcostopromedio(),
                   k.getKardexprecioventa(),
                   k.getKardexvalordescuento(),
-                  k.getKardexcantidad() * -1,
+                  k.getKardexcantidad().negate(),
                   k.getKardexusuario(),
                   k.getKardexnumref(),
                   k.getKardexregorden()
           );
 
           int existeSaldoBod = 0;
-          Double saldoT = 0.00;
-          Double costoUt = 0.00;
-          Double costoTt = 0.00;
+          BigDecimal saldoT = BigDecimal.ZERO;
+          BigDecimal costoUt = BigDecimal.ZERO;
+          BigDecimal costoTt = BigDecimal.ZERO;
           for (Bodega b : aSaldosIni) {
             if (b.getCodigo().equals(kt.getTbodcodigo().trim())) {
               existeSaldoBod = 1;
@@ -136,15 +137,16 @@ public class RegrabadoProducto implements Runnable {
             costoTt = saldoIniBod.getCostoTotal();
           }
 
-          kt.setKardexstock(saldoT + kt.getKardexcantidad());
-          if (kt.getKardexstock() > 0) {
-            kt.setKardexcostototalstock(costoTt + (kt.getKardexpreciocompra() * kt.getKardexcantidad()));
-            kt.setKardexcostopromedio(kt.getKardexcostototalstock() / kt.getKardexstock());
+          kt.setKardexstock(saldoT.add(kt.getKardexcantidad()));
+
+          if (kt.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
+            kt.setKardexcostototalstock(costoTt.add(kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())));
+            kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(kt.getKardexstock()));
           } else {
-            kt.setKardexcostototalstock(0.00);
+            kt.setKardexcostototalstock(BigDecimal.ZERO);
             kt.setKardexcostopromedio(kt.getKardexpreciocompra());
           }
-          kt.setKardexcostototal(kt.getKardexcantidad() * kt.getKardexpreciocompra());
+          kt.setKardexcostototal(kt.getKardexcantidad().multiply(kt.getKardexpreciocompra()));
           kt.setKardexcantidad_a(saldoT);
           kt.setKardexcostopromedio_a(costoUt);
           saldoT = kt.getKardexstock();
@@ -165,25 +167,27 @@ public class RegrabadoProducto implements Runnable {
       if (k.getKardextipotrx().trim().equals("NTI")) {
 
         if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0 && k.getKardexnumref() != 0) {
-          k.setKardexpreciocompra(
-                  getCostoProduccion(k.getProductoscodigo(), k.getKardexnumref()) / k.getKardexcantidad()
+          BigDecimal CostoProduccion = getCostoProduccion(k.getProductoscodigo(), k.getKardexnumref());
+          System.out.println(k.getKardexnumref() + "   " + CostoProduccion + "   " + k.getKardexcantidad());
+          k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad())
           );
         }
-        k.setKardexstock(saldo + k.getKardexcantidad());
+        k.setKardexstock(saldo.add(k.getKardexcantidad()));
 
-        if (k.getKardexstock() > 0) {
-          if ((saldo * costoU) > 0) {
-            k.setKardexcostototalstock(costoT + (k.getKardexpreciocompra() * k.getKardexcantidad()));
-            k.setKardexcostopromedio(k.getKardexcostototalstock() / k.getKardexstock());
+        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
+          if (saldo.multiply(costoU).compareTo(BigDecimal.ZERO) == 1) {
+            System.out.println(k.getKardexcostototalstock() + "    " + k.getKardexstock());
+            k.setKardexcostototalstock(costoT.add(k.getKardexpreciocompra().multiply(k.getKardexcantidad())));
+            k.setKardexcostopromedio(k.getKardexcostototalstock().divide(k.getKardexstock()));
           } else {
             k.setKardexcostopromedio(k.getKardexpreciocompra());
-            k.setKardexcostototalstock(k.getKardexstock() * k.getKardexcostopromedio());
+            k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
           }
         } else {
-          k.setKardexcostototalstock(0.00);
+          k.setKardexcostototalstock(BigDecimal.ZERO);
           k.setKardexcostopromedio(k.getKardexpreciocompra());
         }
-        k.setKardexcostototal(k.getKardexcantidad() * k.getKardexpreciocompra());
+        k.setKardexcostototal(k.getKardexcantidad().multiply(k.getKardexpreciocompra()));
         k.setKardexcantidad_a(saldo);
         k.setKardexcostopromedio_a(costoU);
         saldo = k.getKardexstock();
@@ -200,15 +204,15 @@ public class RegrabadoProducto implements Runnable {
       }
 
       if (k.getKardextipotrx().trim().equals("FAC")) {
-        k.setKardexstock(saldo + k.getKardexcantidad());
+        k.setKardexstock(saldo.add(k.getKardexcantidad()));
         k.setKardexcostopromedio(costoU);
-        if (k.getKardexstock() <= 0) {
-          k.setKardexcostototalstock(0 * k.getKardexcostopromedio());
+        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == -1 || k.getKardexstock().compareTo(BigDecimal.ZERO) == 0) {
+          k.setKardexcostototalstock(k.getKardexcostopromedio().multiply(BigDecimal.ZERO));
         } else {
-          k.setKardexcostototalstock(k.getKardexstock() * k.getKardexcostopromedio());
+          k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
         }
         k.setKardexpreciocompra(k.getKardexcostopromedio());
-        k.setKardexcostototal((k.getKardexcantidad() * -1) * costoU);
+        k.setKardexcostototal(k.getKardexcantidad().negate().multiply(costoU));
         k.setKardexcantidad_a(saldo);
         k.setKardexcostopromedio_a(costoU);
         saldo = k.getKardexstock();
@@ -237,11 +241,11 @@ public class RegrabadoProducto implements Runnable {
       respuestaSaldo = db.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
       if (respuestaSaldo.getCantidad() == null) {
         respuestaSaldo.setCodigo(bInicial.getCodigo());
-        respuestaSaldo.setCantidad(0.00);
-        respuestaSaldo.setCostoUnitario(0.00);
-        respuestaSaldo.setCostoTotal(0.00);
+        respuestaSaldo.setCantidad(BigDecimal.ZERO);
+        respuestaSaldo.setCostoUnitario(BigDecimal.ZERO);
+        respuestaSaldo.setCostoTotal(BigDecimal.ZERO);
       } else {
-        respuestaSaldo.setCostoTotal(respuestaSaldo.getCantidad() * respuestaSaldo.getCostoUnitario());
+        respuestaSaldo.setCostoTotal(respuestaSaldo.getCantidad().multiply(respuestaSaldo.getCostoUnitario()));
       }
     } else {
       respuestaSaldo = db.getSaldoMovAnt(codigoProducto, bInicial.getCodigo(), bInicial.getFecha());
@@ -249,23 +253,23 @@ public class RegrabadoProducto implements Runnable {
         respuestaSaldo = db.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
         if (respuestaSaldo.getCantidad() == null) {
           respuestaSaldo.setCodigo(bInicial.getCodigo());
-          respuestaSaldo.setCantidad(0.00);
-          respuestaSaldo.setCostoUnitario(0.00);
-          respuestaSaldo.setCostoTotal(0.00);
+          respuestaSaldo.setCantidad(BigDecimal.ZERO);
+          respuestaSaldo.setCostoUnitario(BigDecimal.ZERO);
+          respuestaSaldo.setCostoTotal(BigDecimal.ZERO);
         } else {
-          respuestaSaldo.setCostoTotal(respuestaSaldo.getCantidad() * respuestaSaldo.getCostoUnitario());
+          respuestaSaldo.setCostoTotal(respuestaSaldo.getCantidad().multiply(respuestaSaldo.getCostoUnitario()));
         }
       }
     }
     return respuestaSaldo;
   }
 
-  private Double getCostoProduccion(String codProducto, int orden) throws ClassNotFoundException, SQLException {
-    Double costo = 0.00;
-    Double costoMateriales = 0.00;
-    Double costoCif = 0.00;
-    Double costoMod = 0.00;
-    Double costoGas = 0.00;
+  private BigDecimal getCostoProduccion(String codProducto, int orden) throws ClassNotFoundException, SQLException {
+    BigDecimal costo = BigDecimal.ZERO;
+    BigDecimal costoMateriales = BigDecimal.ZERO;
+    BigDecimal costoCif = BigDecimal.ZERO;
+    BigDecimal costoMod = BigDecimal.ZERO;
+    BigDecimal costoGas = BigDecimal.ZERO;
     FactorCosto ft = null;
 
     for (FactorCosto fp : aFac) {
@@ -273,10 +277,16 @@ public class RegrabadoProducto implements Runnable {
 
         ft = fp;
         //      Calculo de mano de obra directa
-        costoMod += (ft.getPersonasRot() * ft.getHorasRot()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasSol() * ft.getHorasSol()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasAca() * ft.getHorasAca()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasTal() * ft.getHorasTal()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
+
+//        costoMod += (ft.getPersonasRot() * ft.getHorasRot()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasSol() * ft.getHorasSol()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasAca() * ft.getHorasAca()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasTal() * ft.getHorasTal()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
       }
     }
 
@@ -284,69 +294,68 @@ public class RegrabadoProducto implements Runnable {
     for (Materiales m : aMats) {
       if (m.getOrdenNumero() == orden) {
         //      Calculo de materiales
-        costoMateriales += m.getDetntecantidad() * m.getDetntepreciounitario();
+        costoMateriales = costoMateriales.add(m.getDetntecantidad().multiply(m.getDetntepreciounitario()));
 
         if (ft.getCategoria() != null) {
           if (!ft.getCategoria().trim().equals("MPR")) {
             if (m.getTcatcodigo().trim().equals("MP")) {
               // Calculo de costo CIF
-              costoCif += m.getDetntecantidad() * ft.getFactorCif();
+              costoCif = costoCif.add(m.getDetntecantidad().multiply(ft.getFactorCif()));
               // Calculo de costo GAS
-              costoGas += m.getDetntecantidad() * ft.getFactorGas();
+              costoGas = costoGas.add(m.getDetntecantidad().multiply(ft.getFactorGas()));
             }
           }
         }
       }
     }
 
-    costo = costoMateriales + costoCif + costoMod + costoGas;
+    costo = costoMateriales.add(costoCif.add(costoMod.add(costoGas)));
 
     return costo;
   }
 
-  private Double getCostoProduccionM2(String codProducto, int orden) throws ClassNotFoundException, SQLException {
-    Double costo = 0.00;
-    Double costoMateriales = 0.00;
-    Double costoCif = 0.00;
-    Double costoMod = 0.00;
-    Double costoGas = 0.00;
-    FactorCosto ft = null;
-
-    for (FactorCosto fp : aFac) {
-      if (fp.getOrdenNumero() == orden) {
-
-        ft = fp;
-        //      Calculo de mano de obra directa
-        costoMod += (ft.getPersonasRot() * ft.getHorasRot()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasSol() * ft.getHorasSol()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasAca() * ft.getHorasAca()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-        costoMod += (ft.getPersonasTal() * ft.getHorasTal()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
-
-        // Calculo de costo CIF
-        costoCif += costoMod * (ft.getFactorCif() == null ? 0.00 : ft.getFactorCif());
-      }
-    }
-
-    for (Materiales m : aMats) {
-      if (m.getOrdenNumero() == orden) {
-        //      Calculo de materiales
-        costoMateriales += m.getDetntecantidad() * m.getDetntepreciounitario();
-
-        if (ft.getCategoria() != null) {
-          if (!ft.getCategoria().trim().equals("MPR")) {
-            if (m.getTcatcodigo().trim().equals("MP")) {
-              // Calculo de costo GAS
-              costoGas += m.getDetntecantidad() * ft.getFactorGas();
-            }
-          }
-        }
-      }
-    }
-
-    costo = costoMateriales + costoCif + costoMod + costoGas;
-    return costo;
-  }
-
+//  private BigDecimal getCostoProduccionM2(String codProducto, int orden) throws ClassNotFoundException, SQLException {
+//    Double costo = 0.00;
+//    Double costoMateriales = 0.00;
+//    Double costoCif = 0.00;
+//    Double costoMod = 0.00;
+//    Double costoGas = 0.00;
+//    FactorCosto ft = null;
+//
+//    for (FactorCosto fp : aFac) {
+//      if (fp.getOrdenNumero() == orden) {
+//
+//        ft = fp;
+//        //      Calculo de mano de obra directa
+//        costoMod += (ft.getPersonasRot() * ft.getHorasRot()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasSol() * ft.getHorasSol()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasAca() * ft.getHorasAca()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//        costoMod += (ft.getPersonasTal() * ft.getHorasTal()) * (ft.getFactorMod() == null ? 0.00 : ft.getFactorMod());
+//
+//        // Calculo de costo CIF
+//        costoCif += costoMod * (ft.getFactorCif() == null ? 0.00 : ft.getFactorCif());
+//      }
+//    }
+//
+//    for (Materiales m : aMats) {
+//      if (m.getOrdenNumero() == orden) {
+//        //      Calculo de materiales
+//        costoMateriales += m.getDetntecantidad() * m.getDetntepreciounitario();
+//
+//        if (ft.getCategoria() != null) {
+//          if (!ft.getCategoria().trim().equals("MPR")) {
+//            if (m.getTcatcodigo().trim().equals("MP")) {
+//              // Calculo de costo GAS
+//              costoGas += m.getDetntecantidad() * ft.getFactorGas();
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//    costo = costoMateriales + costoCif + costoMod + costoGas;
+//    return costo;
+//  }
   @Override
   public void run() {
     try {

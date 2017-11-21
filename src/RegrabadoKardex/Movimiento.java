@@ -1,9 +1,11 @@
-
 package RegrabadoKardex;
 
 import java.sql.Date;
 
 public class Movimiento {
+
+  private String productoscodigo;
+  private int total;
 
   public String getProductoscodigo() {
     return productoscodigo;
@@ -20,10 +22,5 @@ public class Movimiento {
   public void setTotal(int total) {
     this.total = total;
   }
-  
-  private String productoscodigo ;
-  private int total;
-  
-  
-  
+
 }

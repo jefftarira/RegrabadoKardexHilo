@@ -229,11 +229,15 @@ public class DatosDAO {
 
     while (rs.next()) {
       int orden = rs.getInt("kardexregorden");
-      String productotodo = rs.getString("productotodo") == null ? "" : rs.getString("productotodo").trim() ;
-      if (rs.getString("kardextipotrx").trim().equals("NTI") && rs.getString("kardextipo").trim().equals("PRODUCCION") && productotodo.equals(rs.getString("productoscodigo").trim())) {
+      String productotodo = rs.getString("productotodo") == null ? "" : rs.getString("productotodo").trim();
+      if (rs.getString("kardextipotrx").trim().equals("NTI")
+              && rs.getString("kardextipo").trim().equals("PRODUCCION")
+              && productotodo.equals(rs.getString("productoscodigo").trim())) {
         orden = 30;
       }
-      if (rs.getString("kardextipotrx").trim().equals("NTE") && rs.getString("kardextipo").trim().equals("PRODUCCION") && productotodo.equals(rs.getString("productoscodigo").trim())) {
+      if (rs.getString("kardextipotrx").trim().equals("NTE")
+              && rs.getString("kardextipo").trim().equals("PRODUCCION")
+              && productotodo.equals(rs.getString("productoscodigo").trim())) {
         orden = 20;
       }
 
@@ -254,10 +258,10 @@ public class DatosDAO {
               rs.getString("kardexdescripcion").trim(),
               rs.getString("kardextipo").trim(),
               rs.getString("kardexcodigoven1"),
-              rs.getDouble("kardexpreciocompra"),
-              rs.getDouble("kardexprecioventa"),
-              rs.getDouble("kardexvalordescuento"),
-              rs.getDouble("kardexcantidad"),
+              rs.getBigDecimal("kardexpreciocompra"),
+              rs.getBigDecimal("kardexprecioventa"),
+              rs.getBigDecimal("kardexvalordescuento"),
+              rs.getBigDecimal("kardexcantidad"),
               rs.getString("kardexusuario").trim(),
               rs.getInt("kardexnumref"),
               orden
@@ -307,8 +311,8 @@ public class DatosDAO {
     rs = ps.executeQuery();
     while (rs.next()) {
       b.setCodigo(rs.getString("saldosiinvbodegadefault").trim());
-      b.setCantidad(rs.getDouble("saldosiinvcantidad"));
-      b.setCostoUnitario(rs.getDouble("saldosiinvcosto"));
+      b.setCantidad(rs.getBigDecimal("saldosiinvcantidad"));
+      b.setCostoUnitario(rs.getBigDecimal("saldosiinvcosto"));
     }
     rs.close();
     conP.cerrar();
@@ -328,9 +332,9 @@ public class DatosDAO {
     rs = ps.executeQuery();
     while (rs.next()) {
       b.setCodigo(rs.getString("tbodcodigo").trim());
-      b.setCantidad(rs.getDouble("kardexstock"));
-      b.setCostoUnitario(rs.getDouble("kardexcostopromedio"));
-      b.setCostoTotal(rs.getDouble("kardexcostototalstock"));
+      b.setCantidad(rs.getBigDecimal("kardexstock"));
+      b.setCostoUnitario(rs.getBigDecimal("kardexcostopromedio"));
+      b.setCostoTotal(rs.getBigDecimal("kardexcostototalstock"));
     }
     rs.close();
     conP.cerrar();
@@ -353,17 +357,17 @@ public class DatosDAO {
       ft.setOrdenNumero(rs.getInt("ordpronumero"));
       ft.setCodigoProducto(rs.getString("productoscodigo").trim());
       ft.setCategoria(rs.getString("tscatcodigo").trim());
-      ft.setFactorMod(rs.getDouble("tscatmanodeobra"));
-      ft.setFactorCif(rs.getDouble("tscatggproduccion"));
-      ft.setFactorGas(rs.getDouble("tscatgas"));
+      ft.setFactorMod(rs.getBigDecimal("tscatmanodeobra"));
+      ft.setFactorCif(rs.getBigDecimal("tscatggproduccion"));
+      ft.setFactorGas(rs.getBigDecimal("tscatgas"));
       ft.setPersonasRot(rs.getInt("ordpronumpersonas"));
-      ft.setHorasRot(rs.getDouble("ordprohorasproduccion"));
+      ft.setHorasRot(rs.getBigDecimal("ordprohorasproduccion"));
       ft.setPersonasSol(rs.getInt("ordpronumperss"));
-      ft.setHorasSol(rs.getDouble("ordprohorasprods"));
+      ft.setHorasSol(rs.getBigDecimal("ordprohorasprods"));
       ft.setPersonasAca(rs.getInt("ordpronumpersa"));
-      ft.setHorasAca(rs.getDouble("ordprohorasproda"));
+      ft.setHorasAca(rs.getBigDecimal("ordprohorasproda"));
       ft.setPersonasTal(rs.getInt("ordpronumperst"));
-      ft.setHorasTal(rs.getDouble("ordprohorasprodt"));
+      ft.setHorasTal(rs.getBigDecimal("ordprohorasprodt"));
 
       aFac.add(ft);
     }
@@ -388,8 +392,8 @@ public class DatosDAO {
       mt.setProductoC(rs.getString("productoc").trim());
       mt.setProductoscodigo(rs.getString("productod").trim());
       mt.setTcatcodigo(rs.getString("tcatcodigo").trim());
-      mt.setDetntecantidad(rs.getDouble("detntecantidad"));
-      mt.setDetntepreciounitario(rs.getDouble("detntepreciounitario"));
+      mt.setDetntecantidad(rs.getBigDecimal("detntecantidad"));
+      mt.setDetntepreciounitario(rs.getBigDecimal("detntepreciounitario"));
       mt.setNotegrnumero(rs.getInt("notegrnumero"));
       mt.setNotegrcreateuser(rs.getString("notegrcreateuser").trim());
       mt.setNotegrcodigodiv(rs.getString("notegrcodigodiv").trim());
@@ -453,16 +457,16 @@ public class DatosDAO {
         ps.setString(14, k.getKardexdescripcion().trim());
         ps.setString(15, k.getKardextipo().trim());
         ps.setString(16, k.getKardexcodigoven1());
-        ps.setDouble(17, k.getKardexpreciocompra());
-        ps.setDouble(18, k.getKardexprecioventa());
-        ps.setDouble(19, k.getKardexvalordescuento());
-        ps.setDouble(20, k.getKardexcantidad());
-        ps.setDouble(21, k.getKardexcostopromedio());
-        ps.setDouble(22, k.getKardexcostototal());
-        ps.setDouble(23, k.getKardexstock());
-        ps.setDouble(24, k.getKardexcantidad_a());
-        ps.setDouble(25, k.getKardexcostopromedio_a());
-        ps.setDouble(26, k.getKardexcostototalstock());
+        ps.setBigDecimal(17, k.getKardexpreciocompra());
+        ps.setBigDecimal(18, k.getKardexprecioventa());
+        ps.setBigDecimal(19, k.getKardexvalordescuento());
+        ps.setBigDecimal(20, k.getKardexcantidad());
+        ps.setBigDecimal(21, k.getKardexcostopromedio());
+        ps.setBigDecimal(22, k.getKardexcostototal());
+        ps.setBigDecimal(23, k.getKardexstock());
+        ps.setBigDecimal(24, k.getKardexcantidad_a());
+        ps.setBigDecimal(25, k.getKardexcostopromedio_a());
+        ps.setBigDecimal(26, k.getKardexcostototalstock());
         ps.setString(27, "JTARIRA");
         ps.setString(28, "TKardex_BC");
         ps.setString(29, "JTARIRA");
@@ -473,9 +477,9 @@ public class DatosDAO {
         rAfectados += ps.executeUpdate();
 
         if (k.getKardextipotrx().trim().equals("NTI")) {
-          if (k.getKardextipo().trim().equals("PRODUCCION")  && k.getKardexfecha().compareTo(fechaCerrado) > 0 ) {
+          if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0) {
             ps = conP.prepareStatement(uNotIng);
-            ps.setDouble(1, k.getKardexcostototal());
+            ps.setBigDecimal(1, k.getKardexcostototal());
             ps.setString(2, k.getKardexcodigodiv().trim());
             ps.setInt(3, k.getKardexnumero());
             ps.setString(4, k.getKardexusuario().trim());
@@ -483,24 +487,24 @@ public class DatosDAO {
             cNoting += ps.executeUpdate();
 
             ps = conP.prepareStatement(uNotIngDet);
-            ps.setDouble(1, k.getKardexpreciocompra());
-            ps.setDouble(2, k.getKardexcostototal());
+            ps.setBigDecimal(1, k.getKardexpreciocompra());
+            ps.setBigDecimal(2, k.getKardexcostototal());
             ps.setInt(3, k.getKardexnumero());
             ps.setString(4, k.getKardexusuario().trim());
             ps.setString(5, k.getKardexcodigodiv().trim());
             ps.setString(6, k.getProductoscodigo().trim());
             int con = ps.executeUpdate();
-            if(con>1){
-              System.out.println("Se actualizaron dos registros de "+ k.getKardexnumero()+" "+k.getKardexusuario());
+            if (con > 1) {
+              System.out.println("Se actualizaron dos registros de " + k.getKardexnumero() + " " + k.getKardexusuario());
             }
             cNotIngdet += con;
           }
         }
         if (k.getKardextipotrx().trim().equals("NTE")) {
           ps = conP.prepareStatement(uNotEgrDet);
-          ps.setDouble(1, k.getKardexpreciocompra());
-          ps.setDouble(2, k.getKardexcostototal());
-          ps.setDouble(3, k.getKardexpreciocompra());
+          ps.setBigDecimal(1, k.getKardexpreciocompra());
+          ps.setBigDecimal(2, k.getKardexcostototal());
+          ps.setBigDecimal(3, k.getKardexpreciocompra());
           ps.setInt(4, k.getKardexnumero());
           ps.setString(5, k.getKardexusuario());
           ps.setString(6, k.getKardexcodigodiv().trim());

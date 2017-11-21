@@ -1,7 +1,25 @@
-
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
+
 public class FactorCosto {
+
+  private int ordenNumero;
+  private String codigoProducto;
+  private String categoria;
+  private BigDecimal factorMod;
+  private BigDecimal factorCif;
+  private BigDecimal factorGas;
+  private BigDecimal costoMateriales;
+  private BigDecimal costoFactores;
+  private int personasRot;
+  private BigDecimal horasRot;
+  private int personasSol;
+  private BigDecimal horasSol;
+  private int personasAca;
+  private BigDecimal horasAca;
+  private int personasTal;
+  private BigDecimal horasTal;
 
   public int getOrdenNumero() {
     return ordenNumero;
@@ -19,11 +37,11 @@ public class FactorCosto {
     this.personasRot = personasRot;
   }
 
-  public Double getHorasRot() {
+  public BigDecimal getHorasRot() {
     return horasRot;
   }
 
-  public void setHorasRot(Double horasRot) {
+  public void setHorasRot(BigDecimal horasRot) {
     this.horasRot = horasRot;
   }
 
@@ -35,11 +53,11 @@ public class FactorCosto {
     this.personasSol = personasSol;
   }
 
-  public Double getHorasSol() {
+  public BigDecimal getHorasSol() {
     return horasSol;
   }
 
-  public void setHorasSol(Double horasSol) {
+  public void setHorasSol(BigDecimal horasSol) {
     this.horasSol = horasSol;
   }
 
@@ -51,11 +69,11 @@ public class FactorCosto {
     this.personasAca = personasAca;
   }
 
-  public Double getHorasAca() {
+  public BigDecimal getHorasAca() {
     return horasAca;
   }
 
-  public void setHorasAca(Double horasAca) {
+  public void setHorasAca(BigDecimal horasAca) {
     this.horasAca = horasAca;
   }
 
@@ -67,11 +85,11 @@ public class FactorCosto {
     this.personasTal = personasTal;
   }
 
-  public Double getHorasTal() {
+  public BigDecimal getHorasTal() {
     return horasTal;
   }
 
-  public void setHorasTal(Double horasTal) {
+  public void setHorasTal(BigDecimal horasTal) {
     this.horasTal = horasTal;
   }
 
@@ -91,61 +109,44 @@ public class FactorCosto {
     this.categoria = categoria;
   }
 
-  public Double getFactorMod() {
+  public BigDecimal getFactorMod() {
     return factorMod;
   }
 
-  public void setFactorMod(Double factorMod) {
+  public void setFactorMod(BigDecimal factorMod) {
     this.factorMod = factorMod;
   }
 
-  public Double getFactorCif() {
+  public BigDecimal getFactorCif() {
     return factorCif;
   }
 
-  public void setFactorCif(Double factorCif) {
+  public void setFactorCif(BigDecimal factorCif) {
     this.factorCif = factorCif;
   }
 
-  public Double getFactorGas() {
+  public BigDecimal getFactorGas() {
     return factorGas;
   }
 
-  public void setFactorGas(Double factorGas) {
+  public void setFactorGas(BigDecimal factorGas) {
     this.factorGas = factorGas;
   }
 
-  public Double getCostoMateriales() {
+  public BigDecimal getCostoMateriales() {
     return costoMateriales;
   }
 
-  public void setCostoMateriales(Double costoMateriales) {
+  public void setCostoMateriales(BigDecimal costoMateriales) {
     this.costoMateriales = costoMateriales;
   }
 
-  public Double getCostoFactores() {
+  public BigDecimal getCostoFactores() {
     return costoFactores;
   }
 
-  public void setCostoFactores(Double costoFactores) {
+  public void setCostoFactores(BigDecimal costoFactores) {
     this.costoFactores = costoFactores;
   }
-  
-  private int ordenNumero;  
-  private String codigoProducto ;
-  private String categoria;
-  private Double factorMod;
-  private Double factorCif;
-  private Double factorGas;
-  private Double costoMateriales;
-  private Double costoFactores;
-  private int personasRot;
-  private Double horasRot;
-  private int personasSol;
-  private Double horasSol;
-  private int personasAca;
-  private Double horasAca;
-  private int personasTal;
-  private Double horasTal;
-  
+
 }

@@ -1,8 +1,41 @@
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 public class Bodega {
+
+  private String codigo;
+  private BigDecimal cantidad;
+  private BigDecimal costoUnitario;
+  private BigDecimal costoTotal;
+  private boolean cargaInicial;
+  private int predeterminada;
+  private Date fecha;
+
+  public Bodega() {
+  }
+
+  public Bodega(String codigo, BigDecimal cantidad, BigDecimal costoUnitario, BigDecimal costoTotal, boolean cargaInicial) {
+    this.setCodigo(codigo);
+    this.setCantidad(cantidad);
+    this.setCostoUnitario(costoUnitario);
+    this.setCostoTotal(costoTotal);
+    this.setCargaInicial(cargaInicial);
+  }
+
+  public Bodega(String codigo, BigDecimal cantidad, BigDecimal costoUnitario, BigDecimal costoTotal, Date fecha) {
+    this.setCodigo(codigo);
+    this.setCantidad(cantidad);
+    this.setCostoUnitario(costoUnitario);
+    this.setCostoTotal(costoTotal);
+    this.setFecha(fecha);
+  }
+
+  public Bodega(String codigo, Date fecha) {
+    this.setCodigo(codigo);
+    this.setFecha(fecha);
+  }
 
   public int getPredeterminada() {
     return predeterminada;
@@ -28,27 +61,27 @@ public class Bodega {
     this.codigo = codigo;
   }
 
-  public Double getCantidad() {
+  public BigDecimal getCantidad() {
     return cantidad;
   }
 
-  public void setCantidad(Double cantidad) {
+  public void setCantidad(BigDecimal cantidad) {
     this.cantidad = cantidad;
   }
 
-  public Double getCostoUnitario() {
+  public BigDecimal getCostoUnitario() {
     return costoUnitario;
   }
 
-  public void setCostoUnitario(Double costoUnitario) {
+  public void setCostoUnitario(BigDecimal costoUnitario) {
     this.costoUnitario = costoUnitario;
   }
 
-  public Double getCostoTotal() {
+  public BigDecimal getCostoTotal() {
     return costoTotal;
   }
 
-  public void setCostoTotal(Double costoTotal) {
+  public void setCostoTotal(BigDecimal costoTotal) {
     this.costoTotal = costoTotal;
   }
 
@@ -59,38 +92,4 @@ public class Bodega {
   public void setCargaInicial(boolean cargaInicial) {
     this.cargaInicial = cargaInicial;
   }
-
-  public Bodega(String codigo, Double cantidad, Double costoUnitario, Double costoTotal, boolean cargaInicial) {
-    this.setCodigo(codigo);
-    this.setCantidad(cantidad);
-    this.setCostoUnitario(costoUnitario);
-    this.setCostoTotal(costoTotal);
-    this.setCargaInicial(cargaInicial);
-  }
-
-  public Bodega(String codigo, Double cantidad, Double costoUnitario, Double costoTotal, Date fecha) {
-    this.setCodigo(codigo);
-    this.setCantidad(cantidad);
-    this.setCostoUnitario(costoUnitario);
-    this.setCostoTotal(costoTotal);
-    this.setFecha(fecha);
-  }
-
-  public Bodega(String codigo, Date fecha) {
-    this.setCodigo(codigo);
-    this.setFecha(fecha);
-  }
-  
-  public Bodega(){
-    
-  }
-
-  private String codigo;
-  private Double cantidad;
-  private Double costoUnitario;
-  private Double costoTotal;
-  private boolean cargaInicial;
-  private int predeterminada;
-  private Date fecha;
-
 }

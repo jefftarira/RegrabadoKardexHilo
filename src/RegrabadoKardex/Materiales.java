@@ -1,6 +1,18 @@
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
+
 public class Materiales {
+
+  private int ordenNumero;
+  private String productoC;
+  private String productoscodigo;
+  private String tcatcodigo;
+  private BigDecimal detntecantidad;
+  private BigDecimal detntepreciounitario;
+  private int notegrnumero;
+  private String notegrcreateuser;
+  private String notegrcodigodiv;
 
   public int getOrdenNumero() {
     return ordenNumero;
@@ -34,19 +46,19 @@ public class Materiales {
     this.tcatcodigo = tcatcodigo;
   }
 
-  public Double getDetntecantidad() {
+  public BigDecimal getDetntecantidad() {
     return detntecantidad;
   }
 
-  public void setDetntecantidad(Double detntecantidad) {
+  public void setDetntecantidad(BigDecimal detntecantidad) {
     this.detntecantidad = detntecantidad;
   }
 
-  public Double getDetntepreciounitario() {
+  public BigDecimal getDetntepreciounitario() {
     return detntepreciounitario;
   }
 
-  public void setDetntepreciounitario(Double detntepreciounitario) {
+  public void setDetntepreciounitario(BigDecimal detntepreciounitario) {
     this.detntepreciounitario = detntepreciounitario;
   }
 
@@ -73,14 +85,5 @@ public class Materiales {
   public void setNotegrcodigodiv(String notegrcodigodiv) {
     this.notegrcodigodiv = notegrcodigodiv;
   }
-  private int ordenNumero;
-  private String productoC;
-  private String productoscodigo;
-  private String tcatcodigo;
-  private Double detntecantidad;
-  private Double detntepreciounitario;
-  private int notegrnumero;
-  private String notegrcreateuser;
-  private String notegrcodigodiv;
 
 }
