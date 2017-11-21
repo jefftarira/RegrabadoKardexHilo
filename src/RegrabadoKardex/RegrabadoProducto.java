@@ -1,6 +1,7 @@
 package RegrabadoKardex;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class RegrabadoProducto implements Runnable {
     aFac = db.getFactores(m.getProductoscodigo(), fechaIni, fechaFin);
     aDocs = db.getDocumentos(m.getProductoscodigo(), fechaIni, fechaFin);
     aMats = db.getMateriales(m.getProductoscodigo(), fechaIni, fechaFin);
+
+    Redondear re = new Redondear();
 
     int i = 0;
     for (Kardex k : aDocs) {
@@ -141,7 +144,7 @@ public class RegrabadoProducto implements Runnable {
 
           if (kt.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
             kt.setKardexcostototalstock(costoTt.add(kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())));
-            kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(kt.getKardexstock()));
+            kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(kt.getKardexstock(), 6, RoundingMode.HALF_UP));
           } else {
             kt.setKardexcostototalstock(BigDecimal.ZERO);
             kt.setKardexcostopromedio(kt.getKardexpreciocompra());
@@ -160,25 +163,23 @@ public class RegrabadoProducto implements Runnable {
               b.setCostoTotal(costoTt);
             }
           }
-
         }
       }
 
       if (k.getKardextipotrx().trim().equals("NTI")) {
-
         if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0 && k.getKardexnumref() != 0) {
           BigDecimal CostoProduccion = getCostoProduccion(k.getProductoscodigo(), k.getKardexnumref());
-          System.out.println(k.getKardexnumref() + "   " + CostoProduccion + "   " + k.getKardexcantidad());
-          k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad())
-          );
+          CostoProduccion = re.getRound(CostoProduccion, 4);
+//          System.out.println(k.getKardexnumref() + "   " + CostoProduccion + "   " + k.getKardexcantidad());
+          k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad(), 6, RoundingMode.HALF_UP));
         }
         k.setKardexstock(saldo.add(k.getKardexcantidad()));
 
-        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
+        if ((k.getKardexstock().compareTo(BigDecimal.ZERO)) == 1) {
           if (saldo.multiply(costoU).compareTo(BigDecimal.ZERO) == 1) {
-            System.out.println(k.getKardexcostototalstock() + "    " + k.getKardexstock());
             k.setKardexcostototalstock(costoT.add(k.getKardexpreciocompra().multiply(k.getKardexcantidad())));
-            k.setKardexcostopromedio(k.getKardexcostototalstock().divide(k.getKardexstock()));
+            BigDecimal CostoPromedio = k.getKardexcostototalstock().divide(k.getKardexstock(), 6, RoundingMode.HALF_UP);
+            k.setKardexcostopromedio(CostoPromedio);
           } else {
             k.setKardexcostopromedio(k.getKardexpreciocompra());
             k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
