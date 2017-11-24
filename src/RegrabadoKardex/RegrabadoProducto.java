@@ -36,10 +36,8 @@ public class RegrabadoProducto implements Runnable {
     aFac = db.getFactores(m.getProductoscodigo(), fechaIni, fechaFin);
     aDocs = db.getDocumentos(m.getProductoscodigo(), fechaIni, fechaFin);
     aMats = db.getMateriales(m.getProductoscodigo(), fechaIni, fechaFin);
-
-    Redondear re = new Redondear();
-
-    int i = 0;
+    
+    int i = 0; //Conteo de documentos afectados
     for (Kardex k : aDocs) {
 
 //    Comprueba saldo inicial
@@ -169,8 +167,6 @@ public class RegrabadoProducto implements Runnable {
       if (k.getKardextipotrx().trim().equals("NTI")) {
         if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0 && k.getKardexnumref() != 0) {
           BigDecimal CostoProduccion = getCostoProduccion(k.getProductoscodigo(), k.getKardexnumref());
-          CostoProduccion = re.getRound(CostoProduccion, 4);
-//          System.out.println(k.getKardexnumref() + "   " + CostoProduccion + "   " + k.getKardexcantidad());
           k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad(), 6, RoundingMode.HALF_UP));
         }
         k.setKardexstock(saldo.add(k.getKardexcantidad()));
