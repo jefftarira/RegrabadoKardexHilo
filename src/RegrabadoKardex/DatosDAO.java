@@ -200,6 +200,25 @@ public class DatosDAO {
           + " set detntipreciounitario = ?, detntipreciototal = ? "
           + " where notingnumero= ? AND trim(notingcreateuser)= ? and trim(notingcodigodiv)= ? and trim(productoscodigo)  = ? ";
 
+//  public String uNotEgr = " UPDATE notegr "
+//          + "SET notegrpreciototal = ? "
+//          + "WHERE notegrnumero = ? "
+//          + "      AND trim(notegrcreateuser) = ? "
+//          + "      AND trim(notegrcodigodiv) = ? ";
+  public String uNotEgrs = "UPDATE notegr c "
+          + "SET notegrpreciototal = (SELECT CASE "
+          + "                                WHEN count(*) = 0 "
+          + "                                  THEN 0.00 "
+          + "                                ELSE sum(d.detntepreciototal) "
+          + "                                END "
+          + "                         FROM notegrdetnte d "
+          + "                         WHERE c.notegrnumero = d.notegrnumero "
+          + "                               AND trim(c.notegrcreateuser) = trim(d.notegrcreateuser) "
+          + "                               AND trim(c.notegrcodigodiv) = trim(d.notegrcodigodiv)) "
+          + "WHERE c.notegrfecha >= ? "
+          + "      AND c.notegrfecha <= ? "
+          + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
+
   public String uNotEgrDet = " update notegrdetnte "
           + " set detntepreciounitario = ? , detntepreciototal = ? , detntek2cost = ? "
           + " where notegrnumero= ? AND trim(notegrcreateuser)=? and trim(notegrcodigodiv)=? and trim(productoscodigo)  = ? ";
@@ -412,6 +431,7 @@ public class DatosDAO {
     int cNotIngdet = 0;
     int cNotEgr = 0;
     int cNotegrdet = 0;
+
     Date fechaCerrado = new Date((2015 - 1900), 8, 30);
     PreparedStatement ps;
     try {
@@ -513,10 +533,16 @@ public class DatosDAO {
         }
       }
 
+      ps = conP.prepareStatement(uNotEgrs);
+      ps.setDate(1, fechaIni);
+      ps.setDate(2, fechaFin);
+      cNotEgr = ps.executeUpdate();
+
       System.out.println("Se eliminaron " + rEliminados + " registros del kardex.\n"
               + "Se ingresaron " + rAfectados + " registros al Kardex.\n"
               + "Se actualizaron " + cNoting + " registros de notas de ingreso por produccion.\n"
               + "Se actualizaron " + cNotIngdet + " registros del detalle de notas de ingreso por produccion.\n"
+              + "Se actualizaron " + cNotEgr + " notas de egreso .\n"
               + "Se actualizaron " + cNotegrdet + " registros del detalle de notas de egreso .\n");
 
       conP.Commit();
