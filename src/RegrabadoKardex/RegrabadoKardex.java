@@ -12,8 +12,8 @@ public class RegrabadoKardex {
     final ArrayList<Kardex> aDocs = new ArrayList<>();
     ArrayList<Movimiento> aMovs = null;
 
-    String iniDate = "01-01-2017";
-    String finDate = "31-12-2017";
+    String iniDate = "01-11-2017";
+    String finDate = "31-01-2018";
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
