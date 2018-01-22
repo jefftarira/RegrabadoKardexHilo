@@ -120,7 +120,7 @@ public class DatosDAO {
           + "	from	notegrdetnte d,notegr c \n"
           + "	where	c.notegrnumero = d.notegrnumero \n"
           + "	and	c.notegrcreateuser = d.notegrcreateuser \n"
-          + "	and	c.notegrcodigodiv = d.notegrcodigodiv                                                                                                                           \n"
+          + "	and	c.notegrcodigodiv = d.notegrcodigodiv \n"
           + "	and	(c.notegrcontab = 'SI' or c.notegrcontab = 'PO') \n"
           + "	and	c.notegrfecha >= ? \n"
           + "	and	c.notegrfecha <= ? \n"
@@ -219,9 +219,13 @@ public class DatosDAO {
           + "      AND c.notegrfecha <= ? "
           + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
 
-  public String uNotEgrDet = " update notegrdetnte "
-          + " set detntepreciounitario = ? , detntepreciototal = ? , detntek2cost = ? "
-          + " where notegrnumero= ? AND trim(notegrcreateuser)=? and trim(notegrcodigodiv)=? and trim(productoscodigo)  = ? ";
+  public String uNotEgrDet = " UPDATE notegrdetnte "
+          + "SET detntepreciounitario = ?, detntepreciototal = ?, detntek2cost = ? "
+          + "WHERE notegrnumero = ? "
+          + "      AND trim(notegrcreateuser) =? "
+          + "      AND trim(notegrcodigodiv) =? "
+          + "      AND trim(productoscodigo) = ? "
+          + "      AND detnteline = ? ";
 
   public DatosDAO() {
     conP = new ConexionPostgres();
@@ -529,6 +533,7 @@ public class DatosDAO {
           ps.setString(5, k.getKardexusuario());
           ps.setString(6, k.getKardexcodigodiv().trim());
           ps.setString(7, k.getProductoscodigo().trim());
+          ps.setInt(8, k.getKardexlinea());
           cNotegrdet += ps.executeUpdate();
         }
       }
