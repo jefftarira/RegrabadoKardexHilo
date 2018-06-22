@@ -8,12 +8,13 @@ import java.util.ArrayList;
 
 public class RegrabadoKardex {
 
-  public static void main(String arg[]) throws ClassNotFoundException, SQLException, InterruptedException, ParseException {
+  public static void main(String arg[])
+          throws ClassNotFoundException, SQLException, InterruptedException, ParseException {
     final ArrayList<Kardex> aDocs = new ArrayList<>();
     ArrayList<Movimiento> aMovs = null;
 
-    String iniDate = "01-01-2017";
-    String finDate = "31-01-2018";
+    String iniDate = "01-05-2018";
+    String finDate = "31-12-2018";
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -26,7 +27,7 @@ public class RegrabadoKardex {
     DatosDAO db = new DatosDAO();
     aMovs = db.getMovimientos(fechaIni, fechaFin);
 
-    final ArrayList<Thread> threads = new ArrayList<>();
+//    final ArrayList<Thread> threads = new ArrayList<>();
 
     for (int i = 0; i < aMovs.size(); i++) {
 
