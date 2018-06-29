@@ -18,6 +18,8 @@ public class MigrarProduccion {
     ArrayList<DetalleProduccion> prodDet = DB.getDetsOpMarketsoft();
     ArrayList<Usuarios> usuarios = DB.getUsuariosSIP();
 
+    boolean outUser = false;
+
     for (OrdenProduccion p : prodCab) {
       for (Usuarios u : usuarios) {
         if (p.getNombreUsuario().equals(u.getUsuario())) {
@@ -26,10 +28,13 @@ public class MigrarProduccion {
       }
 
       if (p.getIdUsuario() == 0) {
+        outUser = true;
         System.out.println("No se encontro usuario para la producción # " + p.getId());
       }
-      
-      
+
+    }
+
+    if (outUser == false) {
 
     }
 
