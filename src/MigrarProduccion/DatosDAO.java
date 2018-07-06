@@ -139,10 +139,12 @@ public class DatosDAO {
       op.setHorasSoldadura(rs.getBigDecimal("ordprohorasprods"));
       op.setHorasAcabado(rs.getBigDecimal("ordprohorasproda"));
       op.setHorasTaller(rs.getBigDecimal("ordprohorasprodt"));
+      op.setHorasPulverizado(BigDecimal.ZERO);
       op.setPersonasRotomoldeo(new BigDecimal(rs.getInt("ordpronumpersonas")));
       op.setPersonasSoldadura(new BigDecimal(rs.getInt("ordpronumperss")));
       op.setPersonasAcabado(new BigDecimal(rs.getInt("ordpronumpersa")));
       op.setPersonasTaller(new BigDecimal(rs.getInt("ordpronumperst")));
+      op.setPersonasPulverizado(BigDecimal.ZERO);
 
       aOps.add(op);
     }
