@@ -293,6 +293,16 @@ public class DatosDAO {
         ps.setBigDecimal(9, det.getCostoTotal());
         ps.executeUpdate();
       }
+      
+      for(IngresoInvHistorial his : historial){
+        ps = conM.prepareStatement(iIngresoInvHistorial);
+        ps.setInt(1, his.getIdIngresoInv());
+        ps.setInt(2, his.getIdUsuario());
+        ps.setInt(3, his.getIdDivision());
+        ps.setInt(4, his.getIdUsuarioHis());
+        ps.setInt(5, his.getIdEstado());
+        ps.setString(6, his.getDescripcion());
+      }
 
       conM.Commit();
       conM.cerrar();
