@@ -105,6 +105,10 @@ public class DatosDAO {
           + "values (?, ?, ?, ?,\n"
           + "        ?, ?, ?)";
 
+  private final String iInvInvProd = "insert into ingresoinv_ordenproduccion \n"
+          + " (idIngresoInv, idUsuario, idDivision, idOrdenProduccion) \n"
+          + " values (?, ?, ?, ?)";
+
   public ArrayList<IngresoInv> getCabIngMarketsoft()
           throws ClassNotFoundException, SQLException {
     ArrayList<IngresoInv> lista = new ArrayList<>();
@@ -157,7 +161,7 @@ public class DatosDAO {
       ing.setCodigoProducto(rs.getString("productoscodigo").trim());
       ing.setNombreProducto(rs.getString("productosnombre").trim());
       ing.setMedida(rs.getString("productosunidadmedida").trim());
-      ing.setCantidad(rs.getBigDecimal("detnticantidad"));
+      ing.setCantidad(rs.getBigDecimal("detnticantidad") == null ? BigDecimal.ZERO : rs.getBigDecimal("detnticantidad"));
       ing.setCostoUnitario(rs.getBigDecimal("detntipreciounitario"));
       ing.setCostoTotal(rs.getBigDecimal("detntipreciototal"));
       lista.add(ing);
@@ -278,9 +282,22 @@ public class DatosDAO {
                 + " " + ing.getIdProveedor()
                 + " " + ing.getNombreProveedor());
         ps.executeUpdate();
+
+        if (ing.getIdProduccion() != 0) {
+          ps = conM.prepareStatement(iInvInvProd);
+          ps.setInt(1, ing.getId());
+          ps.setInt(2, ing.getIdUsuario());
+          ps.setInt(3, ing.getIdDivision());
+          ps.setInt(4, ing.getIdProduccion());
+          ps.executeUpdate();
+
+        }
+
       }
 
       for (IngresoInvDetalle det : dets) {
+
+        System.out.println("guardando detalle " + det.getIdIngresoInv() + " Usuario " + det.getIdUsuario() + " Division " + det.getIdDivision());
         ps = conM.prepareStatement(iIngresoInvDetalle);
         ps.setInt(1, det.getIdIngresoInv());
         ps.setInt(2, det.getIdUsuario());
@@ -293,8 +310,8 @@ public class DatosDAO {
         ps.setBigDecimal(9, det.getCostoTotal());
         ps.executeUpdate();
       }
-      
-      for(IngresoInvHistorial his : historial){
+
+      for (IngresoInvHistorial his : historial) {
         ps = conM.prepareStatement(iIngresoInvHistorial);
         ps.setInt(1, his.getIdIngresoInv());
         ps.setInt(2, his.getIdUsuario());
@@ -302,6 +319,8 @@ public class DatosDAO {
         ps.setInt(4, his.getIdUsuarioHis());
         ps.setInt(5, his.getIdEstado());
         ps.setString(6, his.getDescripcion());
+        ps.setTimestamp(7, his.getFecha());
+        ps.executeUpdate();
       }
 
       conM.Commit();

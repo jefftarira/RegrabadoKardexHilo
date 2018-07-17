@@ -72,6 +72,7 @@ public class MigrarIngresosBodega {
       his.setIdUsuarioHis(i.getIdUsuario());
       his.setIdEstado(17);
       his.setDescripcion("");
+      his.setFecha(i.getFechaEmision());
 
       historial.add(his);
 
@@ -94,6 +95,7 @@ public class MigrarIngresosBodega {
       }
     }
 
+    System.out.println("Guardando información en Base datos");
     int resultado = DB.saveDataSIP(cabs, dets, historial);
 
     System.out.println("Se procesaron " + cabs.size() + " ingresos de bodega");
