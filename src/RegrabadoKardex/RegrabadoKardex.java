@@ -13,8 +13,8 @@ public class RegrabadoKardex {
     final ArrayList<Kardex> aDocs = new ArrayList<>();
     ArrayList<Movimiento> aMovs = null;
 
-    String iniDate = "01-06-2018";
-    String finDate = "31-12-2018";
+    String iniDate = "01-01-2018";
+    String finDate = "31-01-2018";
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -78,32 +78,32 @@ public class RegrabadoKardex {
 
     }
 
-    Redondear re = new Redondear();
-
-    System.out.println("Total de registros en kardex : " + aDocs.size());
-    System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
-            + "%-12s%-12s%-20s"
-            + "%-12s%-12s%-20s"
-            + "%-12s%-12s\n",
-            "Bodega", "Fecha", "Tipo", "Numero", "Usuario", "Documento", "Producto",
-            "Cantidad", "CostoU", "CostoTotal",
-            "Cantidad", "CostoPro", "CostoTotal",
-            "CantidadAnt", "CostoUAnt");
-
-    aDocs.forEach((c) -> {
-      System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
-              + "%-12s%-12s%-20s"
-              + "%-12s%-12s%-20s"
-              + "%-12s%-12s\n",
-              c.getTbodcodigo(), c.getKardexfecha(), c.getKardextipotrx(), c.getKardexnumero(), c.getKardexusuario(), c.getKardextipo(), c.getProductoscodigo(),
-              c.getKardexcantidad(), re.getRound(c.getKardexpreciocompra(), 4), re.getRound(c.getKardexcostototal(), 4),
-              re.getRound(c.getKardexstock(), 4), re.getRound(c.getKardexcostopromedio(), 4), re.getRound(c.getKardexcostototalstock(), 4),
-              re.getRound(c.getKardexcantidad_a(), 4), re.getRound(c.getKardexcostopromedio_a(), 4));
-    });
-
-    System.out.println("Actualizando Base de datos");
-    int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
-    System.out.println("Se actualizaron " + rAfectados + " registros");
+//    Redondear re = new Redondear();
+//
+//    System.out.println("Total de registros en kardex : " + aDocs.size());
+//    System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
+//            + "%-12s%-12s%-20s"
+//            + "%-12s%-12s%-20s"
+//            + "%-12s%-12s\n",
+//            "Bodega", "Fecha", "Tipo", "Numero", "Usuario", "Documento", "Producto",
+//            "Cantidad", "CostoU", "CostoTotal",
+//            "Cantidad", "CostoPro", "CostoTotal",
+//            "CantidadAnt", "CostoUAnt");
+//
+//    aDocs.forEach((c) -> {
+//      System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
+//              + "%-12s%-12s%-20s"
+//              + "%-12s%-12s%-20s"
+//              + "%-12s%-12s\n",
+//              c.getTbodcodigo(), c.getKardexfecha(), c.getKardextipotrx(), c.getKardexnumero(), c.getKardexusuario(), c.getKardextipo(), c.getProductoscodigo(),
+//              c.getKardexcantidad(), re.getRound(c.getKardexpreciocompra(), 4), re.getRound(c.getKardexcostototal(), 4),
+//              re.getRound(c.getKardexstock(), 4), re.getRound(c.getKardexcostopromedio(), 4), re.getRound(c.getKardexcostototalstock(), 4),
+//              re.getRound(c.getKardexcantidad_a(), 4), re.getRound(c.getKardexcostopromedio_a(), 4));
+//    });
+//
+//    System.out.println("Actualizando Base de datos");
+//    int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
+//    System.out.println("Se actualizaron " + rAfectados + " registros");
   }
 
 }
