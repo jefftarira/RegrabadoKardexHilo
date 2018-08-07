@@ -343,7 +343,10 @@ public class DatosDAO {
         ps.setTimestamp(7, egr.getFechaEmision());
         ps.setDate(8, egr.getFechaKardex());
         ps.setString(9, egr.getObservaciones());
-        ps.setString(10, egr.getId() + "");
+        ps.setString(10, egr.getId()
+                + (egr.getIdProduccion() == 0 ? "" :  " "+egr.getIdProduccion())
+                + " " + egr.getObservaciones()
+        );
         ps.executeUpdate();
 
         if (egr.getIdBodegaIng() > 0) {
@@ -374,7 +377,6 @@ public class DatosDAO {
       }
 
       for (EgresoInvVendedor ven : vendedores) {
-
         ps = conM.prepareStatement(iEgresoVendedores);
         ps.setInt(1, ven.getIdEgresoInv());
         ps.setInt(2, ven.getIdUsuario());

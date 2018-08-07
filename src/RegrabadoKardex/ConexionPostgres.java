@@ -7,17 +7,17 @@ import java.sql.SQLException;
 
 public class ConexionPostgres {
 
-  private String server = "192.168.0.4";  
-  private final String dbname = "PlastimetV10P";
-  private final String port = "5432";
-  private final String user = "postgres";
-  private String passw = "Csdla2008!";
-  
-//  private final String server = "localhost";
+//  private String server = "192.168.0.15";  
 //  private final String dbname = "PlastimetV10P";
 //  private final String port = "5432";
 //  private final String user = "postgres";
-//  private final String passw = "reload";
+//  private String passw = "Csdla2008!";
+//  
+  private final String server = "localhost";
+  private final String dbname = "PlastimetV10P";
+  private final String port = "5432";
+  private final String user = "postgres";
+  private final String passw = "reload";
 
   private Connection con;
 

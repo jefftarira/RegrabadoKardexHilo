@@ -16,17 +16,17 @@ public class ConexionPostgres {
 //  private String passw = "reload";
 //   
     
-//  private String server = "192.168.0.15";
-//  private String dbname = "PlastimetV10P";
-//  private String port = "5432";
-//  private String user = "postgres";
-//  private String passw = "Csdla2008!";
+  private String server = "192.168.0.15";
+  private String dbname = "PlastimetV10P";
+  private String port = "5432";
+  private String user = "postgres";
+  private String passw = "Csdla2008!";
 //  
-  private final String server = "192.168.0.4";
-  private final String dbname = "PlastimetV10P";
-  private final String port = "5432";
-  private final String user = "postgres";
-  private final String passw = "Csdla2008!";
+//  private final String server = "192.168.0.4";
+//  private final String dbname = "PlastimetV10P";
+//  private final String port = "5432";
+//  private final String user = "postgres";
+//  private final String passw = "Csdla2008!";
 
   private Connection con;
 

@@ -278,9 +278,11 @@ public class DatosDAO {
         ps.setString(13, ing.getObservaciones());
         ps.setString(14, ing.getId()
                 + " " + ing.getIdCliente()
+                + (ing.getIdProduccion() == 0 ? "" : " " + ing.getIdProduccion())
                 + " " + ing.getNombreCliente()
                 + " " + ing.getIdProveedor()
-                + " " + ing.getNombreProveedor());
+                + " " + ing.getNombreProveedor()
+                + " " + ing.getObservaciones());
         ps.executeUpdate();
 
         if (ing.getIdProduccion() != 0) {
