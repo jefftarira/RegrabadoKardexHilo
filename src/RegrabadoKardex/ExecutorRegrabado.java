@@ -35,8 +35,8 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
 
   public static void main(String[] args)
           throws ParseException, ClassNotFoundException, SQLException, InterruptedException, ExecutionException {
-    String iniDate = "01-01-2017";
-    String finDate = "31-12-2017";
+    String iniDate = "01-07-2018";
+    String finDate = "31-12-2018";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
     java.util.Date dateIni = sdf.parse(iniDate);
@@ -86,6 +86,9 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     });
 
     System.out.println("Total de registros en kardex : " + aDocs.size());
+    System.out.println("Actualizando Base de datos");
+    int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
+    System.out.println("Se actualizaron " + rAfectados + " registros");
   }
 
 }

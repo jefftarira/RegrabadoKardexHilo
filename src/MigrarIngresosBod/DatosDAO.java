@@ -299,7 +299,8 @@ public class DatosDAO {
 
       for (IngresoInvDetalle det : dets) {
 
-        System.out.println("guardando detalle " + det.getIdIngresoInv() + " Usuario " + det.getIdUsuario() + " Division " + det.getIdDivision());
+        System.out.println("guardando detalle " + det.getIdIngresoInv() + " Usuario "
+                + det.getIdUsuario() + " Division " + det.getIdDivision());
         ps = conM.prepareStatement(iIngresoInvDetalle);
         ps.setInt(1, det.getIdIngresoInv());
         ps.setInt(2, det.getIdUsuario());

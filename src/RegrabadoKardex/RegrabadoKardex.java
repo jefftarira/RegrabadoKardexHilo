@@ -99,9 +99,9 @@ public class RegrabadoKardex {
               re.getRound(c.getKardexcantidad_a(), 4), re.getRound(c.getKardexcostopromedio_a(), 4));
     });
     System.out.println("Total de registros en kardex : " + aDocs.size());
-//    System.out.println("Actualizando Base de datos");
-//    int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
-//    System.out.println("Se actualizaron " + rAfectados + " registros");
+    System.out.println("Actualizando Base de datos");
+    int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
+    System.out.println("Se actualizaron " + rAfectados + " registros");
   }
 
 }
