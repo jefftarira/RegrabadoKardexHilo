@@ -4,7 +4,6 @@ import MigrarEgresosBod.MODELS.EgresoInv;
 import MigrarEgresosBod.MODELS.BodegaInv;
 import MigrarEgresosBod.MODELS.Division;
 import MigrarEgresosBod.MODELS.EgresoInvDetalle;
-import MigrarEgresosBod.MODELS.EgresoInvDetalleProduccion;
 import MigrarEgresosBod.MODELS.EgresoInvHistorial;
 import MigrarEgresosBod.MODELS.EgresoInvVendedor;
 import MigrarEgresosBod.MODELS.MovimientoInv;
@@ -32,7 +31,6 @@ public class MigrarEgresosBodega {
     ArrayList<EgresoInvDetalle> dets = DB.getDetEgrMarketsoft();
     ArrayList<EgresoInvHistorial> historial = new ArrayList<>();
     ArrayList<EgresoInvVendedor> vendedores = new ArrayList<>();
-    ArrayList<EgresoInvDetalleProduccion> detprod = new ArrayList<>();
 
     ArrayList<OpDetalle> dProds = DB.getDetalleOpSIP();
     int MaxIdDetalle = DB.getMaxIdDetalleEgresoInv();
@@ -126,26 +124,10 @@ public class MigrarEgresosBodega {
       MaxIdDetalle++;
       det.setId(MaxIdDetalle);
 
-      if (det.getIdProduccion() > 0) {
-        for (OpDetalle op : dProds) {
-          if (det.getIdProduccion() == op.getIdOrdenProduccion()
-                  && det.getCodigoProducto().trim().equals(op.getCodigoProducto().trim())
-                  && det.getCantidad().compareTo(op.getCantidad()) == 0) {
-//            System.out.println("Se encontro detalle con detalle produccion " + det.getIdProduccion() + ""
-//                    + " producto " + det.getCodigoProducto());
-
-            EgresoInvDetalleProduccion ep = new EgresoInvDetalleProduccion();
-            ep.setIdEgresoInvDetalle(det.getId());
-            ep.setIdOpDetalle(op.getId());
-            detprod.add(ep);
-          }
-        }
-      }
-
     }
 
     System.out.println("Guardando información en Base datos");
-    int resultado = DB.saveDataSIP(cabs, dets, vendedores, historial, detprod);
+    int resultado = DB.saveDataSIP(cabs, dets, vendedores, historial);
 
     System.out.println("Se procesaron " + cabs.size() + " egresos de bodega");
     System.out.println("Se procesaron " + dets.size() + " detalles egresos de bodega");

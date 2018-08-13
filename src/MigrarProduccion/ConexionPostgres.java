@@ -14,7 +14,7 @@ public class ConexionPostgres {
 //  private String passw = "reload";
 //   
     
-  private String server = "192.168.0.15";
+  private String server = "192.168.2.15";
   private String dbname = "PlastimetV10P";
   private String port = "5432";
   private String user = "postgres";

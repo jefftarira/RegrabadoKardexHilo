@@ -4,7 +4,6 @@ import MigrarEgresosBod.MODELS.EgresoInv;
 import MigrarEgresosBod.MODELS.BodegaInv;
 import MigrarEgresosBod.MODELS.Division;
 import MigrarEgresosBod.MODELS.EgresoInvDetalle;
-import MigrarEgresosBod.MODELS.EgresoInvDetalleProduccion;
 import MigrarEgresosBod.MODELS.EgresoInvHistorial;
 import MigrarEgresosBod.MODELS.EgresoInvVendedor;
 import MigrarEgresosBod.MODELS.MovimientoInv;
@@ -129,8 +128,9 @@ public class DatosDAO {
   private final String iEgresoVendedores = "insert into egresoinvvendedor (idEgresoInv, idUsuario, idDivision, idVendedor)\n"
           + "values (?, ?, ?, ?)";
 
-  private final String iEgresoInvDetalleOP = "insert into egresoinvdetalle_ordenproduccion (idEgresoInvDetalle, idOpDetalle)\n"
-          + "values (?, ?)";
+  private final String iEgrInvProd = "insert into egresoinv_ordenproduccion\n"
+          + "(idEgresoInv, idUsuario, idDivision, idOrdenProduccion)\n"
+          + "values (?, ?, ?, ?)";
 
   public ArrayList<EgresoInv> getCabEgrMarketsoft()
           throws ClassNotFoundException, SQLException {
@@ -322,8 +322,7 @@ public class DatosDAO {
   }
 
   public int saveDataSIP(ArrayList<EgresoInv> cabs, ArrayList<EgresoInvDetalle> dets,
-          ArrayList<EgresoInvVendedor> vendedores, ArrayList<EgresoInvHistorial> historial,
-          ArrayList<EgresoInvDetalleProduccion> detprod)
+          ArrayList<EgresoInvVendedor> vendedores, ArrayList<EgresoInvHistorial> historial)
           throws ClassNotFoundException, SQLException {
 
     int respuesta = 0;
@@ -344,7 +343,7 @@ public class DatosDAO {
         ps.setDate(8, egr.getFechaKardex());
         ps.setString(9, egr.getObservaciones());
         ps.setString(10, egr.getId()
-                + (egr.getIdProduccion() == 0 ? "" :  " "+egr.getIdProduccion())
+                + (egr.getIdProduccion() == 0 ? "" : "OP" + egr.getIdProduccion())
                 + " " + egr.getObservaciones()
         );
         ps.executeUpdate();
@@ -356,6 +355,18 @@ public class DatosDAO {
           ps.setInt(3, egr.getIdDivision());
           ps.setInt(4, egr.getIdBodegaIng());
           ps.executeUpdate();
+        }
+
+        if (egr.getIdProduccion() != 0) {
+          System.out.println(egr.getNombreDivision() + "   " + egr.getNombreUsuario() + "  " + egr.getId()+ "  "+ egr.getIdProduccion());
+          ps = conM.prepareStatement(iEgrInvProd);
+          ps.setInt(1, egr.getId());
+          ps.setInt(2, egr.getIdUsuario());
+          ps.setInt(3, egr.getIdDivision());
+          ps.setInt(4, egr.getIdProduccion());
+
+          ps.executeUpdate();
+
         }
       }
 
@@ -394,13 +405,6 @@ public class DatosDAO {
         ps.setInt(5, his.getIdEstado());
         ps.setString(6, his.getDescripcion());
         ps.setTimestamp(7, his.getFecha());
-        ps.executeUpdate();
-      }
-
-      for (EgresoInvDetalleProduccion ep : detprod) {
-        ps = conM.prepareStatement(iEgresoInvDetalleOP);
-        ps.setInt(1, ep.getIdEgresoInvDetalle());
-        ps.setInt(2, ep.getIdOpDetalle());
         ps.executeUpdate();
       }
 
