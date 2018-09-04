@@ -224,7 +224,7 @@ public class RegrabadoProducto1 {
       i++;
     }
 
-    System.out.println(" || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
+    System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
     return kRegrabado;
   }
 
@@ -298,9 +298,50 @@ public class RegrabadoProducto1 {
         }
       }
     }
+    costo = costoMateriales.add(costoCif.add(costoMod.add(costoGas)));
+    return costo;
+  }
+
+  private BigDecimal getCostoProduccionM2(String codProducto, int orden) throws ClassNotFoundException, SQLException {
+    BigDecimal costo = BigDecimal.ZERO;
+    BigDecimal costoMateriales = BigDecimal.ZERO;
+    BigDecimal costoCif = BigDecimal.ZERO;
+    BigDecimal costoMod = BigDecimal.ZERO;
+    BigDecimal costoGas = BigDecimal.ZERO;
+    FactorCosto ft = null;
+
+    for (FactorCosto fp : aFac) {
+      if (fp.getOrdenNumero() == orden) {
+
+        ft = fp;
+        //      Calculo de mano de obra directa
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
+      }
+    }
+
+    // Calculo de costo CIF
+    costoCif = costoCif.add((ft.getFactorCif() == null ? BigDecimal.ZERO : ft.getFactorCif()).multiply(costoMod));
+
+    for (Materiales m : aMats) {
+      if (m.getOrdenNumero() == orden) {
+        //      Calculo de materiales
+        costoMateriales = costoMateriales.add(m.getDetntecantidad().multiply(m.getDetntepreciounitario()));
+
+        if (ft.getCategoria() != null) {
+          if (!ft.getCategoria().trim().equals("MPR")) {
+            if (m.getTcatcodigo().trim().equals("MP")) {
+              // Calculo de costo GAS
+              costoGas = costoGas.add(m.getDetntecantidad().multiply(ft.getFactorGas()));
+            }
+          }
+        }
+      }
+    }
 
     costo = costoMateriales.add(costoCif.add(costoMod.add(costoGas)));
-
     return costo;
   }
 

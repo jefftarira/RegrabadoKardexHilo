@@ -371,7 +371,7 @@ public class DatosDAO {
       }
 
       for (EgresoInvDetalle det : dets) {
-        System.out.println(det.getNombreDivision() + "   " + det.getNombreUsuario() + "  " + det.getIdEgresoInv());
+//        System.out.println(det.getNombreDivision() + "   " + det.getNombreUsuario() + "  " + det.getIdEgresoInv());
 
         ps = conM.prepareStatement(iEgresoInvDetalle);
         ps.setInt(1, det.getId());

@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +34,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
 
   public static void main(String[] args)
           throws ParseException, ClassNotFoundException, SQLException, InterruptedException, ExecutionException {
-    String iniDate = "01-07-2018";
+    String iniDate = "01-06-2018";
     String finDate = "31-12-2018";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -59,11 +58,13 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     executorService.shutdown();
 
     for (int i = 0; i < futures.length; i++) {
-      aDocs.addAll(futures[i].get());
+      ArrayList<Kardex> data =  futures[i].get();
+       if (data == null){
+         System.out.println("error en data"+ futures[i].get());
+       }
+      aDocs.addAll(data);
     }
-
     Redondear re = new Redondear();
-
     System.out.println("Total de registros en kardex : " + aDocs.size());
     System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
             + "%-12s%-12s%-20s"

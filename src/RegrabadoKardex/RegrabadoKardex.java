@@ -13,8 +13,8 @@ public class RegrabadoKardex {
     final ArrayList<Kardex> aDocs = new ArrayList<>();
     ArrayList<Movimiento> aMovs = null;
 
-    String iniDate = "01-01-2017";
-    String finDate = "31-12-2017";
+    String iniDate = "01-07-2018";
+    String finDate = "31-12-2018";
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -99,7 +99,7 @@ public class RegrabadoKardex {
               re.getRound(c.getKardexcantidad_a(), 4), re.getRound(c.getKardexcostopromedio_a(), 4));
     });
     System.out.println("Total de registros en kardex : " + aDocs.size());
-    System.out.println("Actualizando Base de datos");
+    System.out.println("Actualizando Base de datos...");
     int rAfectados = db.saveChanges(aDocs, fechaIni, fechaFin);
     System.out.println("Se actualizaron " + rAfectados + " registros");
   }

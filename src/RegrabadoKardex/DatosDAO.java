@@ -134,7 +134,7 @@ public class DatosDAO {
           + " and	saldosiinvbodegadefault = ? "
           + " limit 1 ";
 
-  private String sSaldoMovAnt = " select	productoscodigo,tbodcodigo,kardexstock,kardexcostopromedio,kardexcostototalstock "
+  private String sSaldoMovAnt = " select productoscodigo,tbodcodigo,kardexstock,kardexcostopromedio,kardexcostototalstock "
           + " from	kardex where productoscodigo=? and kardexfecha < ? and tbodcodigo = ? "
           + " order	by kardexfecha desc, kardexcodigosec desc limit 1 ";
 
@@ -232,6 +232,7 @@ public class DatosDAO {
   }
 
   public ArrayList getDocumentos(String codProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
+
     ArrayList<Kardex> aDoc = new ArrayList<>();
     Kardex k;
     ResultSet rs;
@@ -247,7 +248,6 @@ public class DatosDAO {
     ps.setDate(7, fechaIni);
     ps.setDate(8, fechaFin);
     ps.setString(9, codProducto.trim().toUpperCase());
-
     rs = ps.executeQuery();
 
     while (rs.next()) {
@@ -364,7 +364,8 @@ public class DatosDAO {
     return b;
   }
 
-  public ArrayList getFactores(String codigoProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
+  public ArrayList getFactores(String codigoProducto, Date fechaIni, Date fechaFin) 
+          throws ClassNotFoundException, SQLException {
     ArrayList<FactorCosto> aFac = new ArrayList<>();
 
     ResultSet rs;

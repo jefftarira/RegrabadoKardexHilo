@@ -10,8 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DatosDAO {
 
@@ -300,10 +298,10 @@ public class DatosDAO {
       }
 
       for (OpOt opot : listaOpOt) {
-        System.out.println("Procesando lista OP OT : OP# "+opot.getIdOrdenProduccion()+"  OT# "+opot.getIdOrdenTrabajo());
+        System.out.println("Procesando lista OP OT : OP# " + opot.getIdOrdenProduccion() + "  OT# " + opot.getIdOrdenTrabajo());
         ps = conM.prepareStatement(iOpOt);
         ps.setInt(1, opot.getIdOrdenProduccion());
-        ps.setInt(2, opot.getIdOrdenTrabajo());        
+        ps.setInt(2, opot.getIdOrdenTrabajo());
         ps.executeUpdate();
       }
 
