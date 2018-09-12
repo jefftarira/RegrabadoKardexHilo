@@ -33,8 +33,9 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
   private static ArrayList<Movimiento> aMovs = new ArrayList<>();
 
   public static void main(String[] args)
-          throws ParseException, ClassNotFoundException, SQLException, InterruptedException, ExecutionException {
-    String iniDate = "01-06-2018";
+          throws ParseException, ClassNotFoundException, SQLException,
+          InterruptedException, ExecutionException {
+    String iniDate = "01-08-2018";
     String finDate = "31-12-2018";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -58,10 +59,10 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     executorService.shutdown();
 
     for (int i = 0; i < futures.length; i++) {
-      ArrayList<Kardex> data =  futures[i].get();
-       if (data == null){
-         System.out.println("error en data"+ futures[i].get());
-       }
+      ArrayList<Kardex> data = futures[i].get();
+      if (data == null) {
+        System.out.println("error en data" + futures[i].get());
+      }
       aDocs.addAll(data);
     }
     Redondear re = new Redondear();

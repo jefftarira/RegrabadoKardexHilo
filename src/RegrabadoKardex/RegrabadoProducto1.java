@@ -268,15 +268,16 @@ public class RegrabadoProducto1 {
 
     for (FactorCosto fp : aFac) {
       if (fp.getOrdenNumero() == orden) {
-
         ft = fp;
         //      Calculo de mano de obra directa
-
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
-
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO
+                : ft.getFactorMod()).multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO
+                : ft.getFactorMod()).multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO
+                : ft.getFactorMod()).multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
+        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO
+                : ft.getFactorMod()).multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
       }
     }
 
