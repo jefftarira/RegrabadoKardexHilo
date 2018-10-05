@@ -35,7 +35,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
   public static void main(String[] args)
           throws ParseException, ClassNotFoundException, SQLException,
           InterruptedException, ExecutionException {
-    String iniDate = "01-08-2018";
+    String iniDate = "01-09-2018";
     String finDate = "31-12-2018";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
