@@ -258,7 +258,8 @@ public class RegrabadoProducto1 {
     return respuestaSaldo;
   }
 
-  private BigDecimal getCostoProduccion(String codProducto, int orden) throws ClassNotFoundException, SQLException {
+  private BigDecimal getCostoProduccion(String codProducto, int orden)
+          throws ClassNotFoundException, SQLException {
     BigDecimal costo = BigDecimal.ZERO;
     BigDecimal costoMateriales = BigDecimal.ZERO;
     BigDecimal costoCif = BigDecimal.ZERO;
@@ -303,7 +304,8 @@ public class RegrabadoProducto1 {
     return costo;
   }
 
-  private BigDecimal getCostoProduccionM2(String codProducto, int orden) throws ClassNotFoundException, SQLException {
+  private BigDecimal getCostoProduccionM2(String codProducto, int orden)
+          throws ClassNotFoundException, SQLException {
     BigDecimal costo = BigDecimal.ZERO;
     BigDecimal costoMateriales = BigDecimal.ZERO;
     BigDecimal costoCif = BigDecimal.ZERO;
