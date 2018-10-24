@@ -1,5 +1,7 @@
 package RegrabadoKardex;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +13,7 @@ import java.util.GregorianCalendar;
 
 public class DatosDAO {
 
+  private final ConexionMysql conM;
   private ConexionPostgres conP;
 
   private String sDocumentos = " select     kardexcodigodiv,kardexanno,kardextipotrx,kardexnumero,kardexlinea,kardexorden, "
@@ -169,9 +172,9 @@ public class DatosDAO {
 
   public String sMaxKardexCodigo = " select max(kardexcodigosec) as maxreg from kardex ";
 
-  public String dKardex = " delete from kardex where kardexfecha>= ? and kardexfecha<= ? ";
+  private String dKardex = " delete from kardex where kardexfecha>= ? and kardexfecha<= ? ";
 
-  public String iKardex = " INSERT INTO public.kardex( "
+  private String iKardex = " INSERT INTO public.kardex( "
           + "            kardexcodigodiv, kardexanno, kardextipotrx, kardexnumero, kardexlinea, "
           + "            kardexcodigosec, kardexorden, kardexfecha, kardexhora, productoscodigo, "
           + "            tbodcodigo, kardexlote, kardexcaducidad, kardexdescripcion, kardextipo, "
@@ -189,23 +192,32 @@ public class DatosDAO {
           + "            ?, CURRENT_DATE, ?, ?, "
           + "            CURRENT_DATE, ?, ?, ?) ";
 
-  public String uNotIng = " update noting "
+  private String uNotIng = " update noting "
           + " set notingpreciototal = ? "
           + " where trim(notingcodigodiv) = ? "
           + " and  notingnumero = ? "
           + " and trim(notingcreateuser) = ? "
           + " and trim(notingtipo)= ? ";
 
-  public String uNotIngDet = " update notingdetnti "
+  private String uNotIngDet = " update notingdetnti "
           + " set detntipreciounitario = ?, detntipreciototal = ? "
           + " where notingnumero= ? AND trim(notingcreateuser)= ? and trim(notingcodigodiv)= ? and trim(productoscodigo)  = ? ";
+
+  private String uIngresInvDetalleSip = "update ingresoinvdetalle\n"
+          + "set costoUnitario = ?,\n"
+          + "  costoTotal = ? \n"
+          + "where idIngresoInv = ?\n"
+          + "and idUsuario = ?\n"
+          + "and idDivision = ? \n"
+          + "and codigoProducto = ? \n"
+          + "and status = 'A'";
 
 //  public String uNotEgr = " UPDATE notegr "
 //          + "SET notegrpreciototal = ? "
 //          + "WHERE notegrnumero = ? "
 //          + "      AND trim(notegrcreateuser) = ? "
 //          + "      AND trim(notegrcodigodiv) = ? ";
-  public String uNotEgrs = "UPDATE notegr c "
+  private String uNotEgrs = "UPDATE notegr c "
           + "SET notegrpreciototal = (SELECT CASE "
           + "                                WHEN count(*) = 0 "
           + "                                  THEN 0.00 "
@@ -219,7 +231,7 @@ public class DatosDAO {
           + "      AND c.notegrfecha <= ? "
           + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
 
-  public String uNotEgrDet = " UPDATE notegrdetnte "
+  private String uNotEgrDet = " UPDATE notegrdetnte "
           + "SET detntepreciounitario = ?, detntepreciototal = ?, detntek2cost = ? "
           + "WHERE notegrnumero = ? "
           + "      AND trim(notegrcreateuser) =? "
@@ -227,8 +239,38 @@ public class DatosDAO {
           + "      AND trim(productoscodigo) = ? "
           + "      AND detnteline = ? ";
 
+  private String uEgresoInvDetalleSip = "update egresoinvdetalle\n"
+          + "set costoUnitario = ?,\n"
+          + "  costoTotal      = ?\n"
+          + "where idEgresoInv = ?\n"
+          + "      and idUsuario = ?\n"
+          + "      and idDivision = ?\n"
+          + "      and codigoProducto = ?\n"
+          + "      and status = 'A' ";
+
+  private final String sUsersSIP = "select\n"
+          + "  id,\n"
+          + "  usuario\n"
+          + "from usuarios ";
+
+  private final String sDivisionSIP = "select\n"
+          + "  id,\n"
+          + "  idmarketsoft,\n"
+          + "  descripcion,\n"
+          + "  status\n"
+          + "from divisiones ";
+
+  private final String sTipoMovimientosSIP = "select\n"
+          + "  id,\n"
+          + "  descripcion,\n"
+          + "  documento,\n"
+          + "  status\n"
+          + "from tiposmovimientosinv\n"
+          + " where status = 'A' ";
+
   public DatosDAO() {
     conP = new ConexionPostgres();
+    conM = new ConexionMysql();
   }
 
   public ArrayList getDocumentos(String codProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
@@ -364,7 +406,7 @@ public class DatosDAO {
     return b;
   }
 
-  public ArrayList getFactores(String codigoProducto, Date fechaIni, Date fechaFin) 
+  public ArrayList getFactores(String codigoProducto, Date fechaIni, Date fechaFin)
           throws ClassNotFoundException, SQLException {
     ArrayList<FactorCosto> aFac = new ArrayList<>();
 
@@ -400,7 +442,8 @@ public class DatosDAO {
     return aFac;
   }
 
-  public ArrayList getMateriales(String codigoProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
+  public ArrayList getMateriales(String codigoProducto, Date fechaIni, Date fechaFin)
+          throws ClassNotFoundException, SQLException {
 
     ArrayList<Materiales> aMats = new ArrayList<>();
 
@@ -428,7 +471,68 @@ public class DatosDAO {
     return aMats;
   }
 
-  public int saveChanges(ArrayList<Kardex> aKardex, Date fechaIni, Date fechaFin) throws SQLException, ClassNotFoundException {
+  public ArrayList<Usuarios> getUsuariosSIP() throws ClassNotFoundException, SQLException {
+    ArrayList<Usuarios> aUsers = new ArrayList<>();
+    PreparedStatement ps;
+    conM.conectar();
+    ps = conM.prepareStatement(sUsersSIP);
+    ResultSet rs = ps.executeQuery();
+
+    while (rs.next()) {
+      Usuarios u = new Usuarios();
+      u.setId(rs.getInt("id"));
+      u.setUsuario(rs.getString("usuario").trim().toUpperCase());
+
+      aUsers.add(u);
+    }
+
+    rs.close();
+    conM.cerrar();
+    return aUsers;
+  }
+
+  public ArrayList<Division> getDivisionesSIP() throws ClassNotFoundException, SQLException {
+    ArrayList<Division> lista = new ArrayList<>();
+    PreparedStatement ps;
+    conM.conectar();
+    ps = conM.prepareStatement(sDivisionSIP);
+    ResultSet rs = ps.executeQuery();
+
+    while (rs.next()) {
+      Division d = new Division();
+      d.setId(rs.getInt("id"));
+      d.setIdMarketsoft(rs.getString("idmarketsoft"));
+
+      lista.add(d);
+    }
+
+    rs.close();
+    conM.cerrar();
+    return lista;
+  }
+
+  public ArrayList<MovimientoInv> getTiposMovSIP() throws ClassNotFoundException, SQLException {
+    ArrayList<MovimientoInv> lista = new ArrayList<>();
+    PreparedStatement ps;
+    conM.conectar();
+    ps = conM.prepareStatement(sTipoMovimientosSIP);
+    ResultSet rs = ps.executeQuery();
+
+    while (rs.next()) {
+      MovimientoInv m = new MovimientoInv();
+      m.setId(rs.getInt("id"));
+      m.setDescripcion(rs.getString("descripcion"));
+      m.setDocumento(rs.getString("documento"));
+      lista.add(m);
+    }
+
+    rs.close();
+    conM.cerrar();
+    return lista;
+  }
+
+  public int saveChanges(ArrayList<Kardex> aKardex, Date fechaIni, Date fechaFin)
+          throws SQLException, ClassNotFoundException {
     int rAfectados = 0;
     int rEliminados = 0;
     int maxKardexSec = 0;
@@ -442,6 +546,9 @@ public class DatosDAO {
     try {
       conP.conectar();
       conP.autoCommit(false);
+
+      conM.conectar();
+      conM.autoCommit(false);
 
       //Se eliminan datos de kardex
       ps = conP.prepareStatement(dKardex);
@@ -518,11 +625,16 @@ public class DatosDAO {
             ps.setString(4, k.getKardexusuario().trim());
             ps.setString(5, k.getKardexcodigodiv().trim());
             ps.setString(6, k.getProductoscodigo().trim());
-            int con = ps.executeUpdate();
-            if (con > 1) {
-              System.out.println("Se actualizaron dos registros de " + k.getKardexnumero() + " " + k.getKardexusuario());
-            }
-            cNotIngdet += con;
+            cNotIngdet += ps.executeUpdate();
+
+            ps = conM.prepareStatement(uIngresInvDetalleSip);
+            ps.setBigDecimal(1, k.getKardexpreciocompra());
+            ps.setBigDecimal(2, k.getKardexcostototal());
+            ps.setInt(3, k.getKardexnumero());
+            ps.setInt(4, k.getIdUsuario());
+            ps.setInt(5, k.getIdDivision());
+            ps.setString(6, k.getProductoscodigo().trim());
+            ps.executeUpdate();
           }
         }
         if (k.getKardextipotrx().trim().equals("NTE")) {
@@ -536,6 +648,15 @@ public class DatosDAO {
           ps.setString(7, k.getProductoscodigo().trim());
           ps.setInt(8, k.getKardexlinea());
           cNotegrdet += ps.executeUpdate();
+
+          ps = conM.prepareStatement(uEgresoInvDetalleSip);
+          ps.setBigDecimal(1, k.getKardexpreciocompra());
+          ps.setBigDecimal(2, k.getKardexcostototal());
+          ps.setInt(3, k.getKardexnumero());
+          ps.setInt(4, k.getIdUsuario());
+          ps.setInt(5, k.getIdDivision());
+          ps.setString(6, k.getProductoscodigo().trim());
+          ps.executeUpdate();
         }
       }
 
@@ -554,9 +675,16 @@ public class DatosDAO {
       conP.Commit();
       conP.cerrar();
 
+      conM.Commit();
+      conM.cerrar();
+
     } catch (SQLException ex) {
       conP.Rollback();
       conP.cerrar();
+
+      conM.Rollback();
+      conM.cerrar();
+
       ex.printStackTrace();
       rAfectados = -1;
     }

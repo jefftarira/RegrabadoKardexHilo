@@ -36,7 +36,6 @@ public class RegrabadoProducto1 {
 
     int i = 0; //Conteo de documentos afectados
     for (Kardex k : aDocs) {
-
 //    Comprueba saldo inicial
       int existe = 0;
       BigDecimal saldo = BigDecimal.ZERO;
@@ -61,19 +60,19 @@ public class RegrabadoProducto1 {
 
       //************************************     Calcula Costos   ************************************ \\
       if (k.getKardextipotrx().trim().equals("NTE")) {
-
-        k.setKardexstock(saldo.add(k.getKardexcantidad()));
-        k.setKardexcostopromedio(costoU);
+        k.setKardexcantidad(k.getKardexcantidad().setScale(5, RoundingMode.HALF_UP));
+        k.setKardexstock(saldo.add(k.getKardexcantidad()).setScale(6, RoundingMode.HALF_UP));
+        k.setKardexcostopromedio(costoU.setScale(6, RoundingMode.HALF_UP));
 
         if (k.getKardexstock().compareTo(BigDecimal.ZERO) == -1 || k.getKardexstock().compareTo(BigDecimal.ZERO) == 0) {
-          k.setKardexcostototalstock(k.getKardexcostopromedio().multiply(BigDecimal.ZERO));
+          k.setKardexcostototalstock(k.getKardexcostopromedio().multiply(BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP));
         } else {
-          k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
+          k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()).setScale(2, RoundingMode.HALF_UP));
         }
         k.setKardexpreciocompra(k.getKardexcostopromedio());
-        k.setKardexcostototal(costoU.multiply(k.getKardexcantidad().negate()));
-        k.setKardexcantidad_a(saldo);
-        k.setKardexcostopromedio_a(costoU);
+        k.setKardexcostototal(costoU.multiply(k.getKardexcantidad().negate()).setScale(2, RoundingMode.HALF_UP));
+        k.setKardexcantidad_a(saldo.setScale(5, RoundingMode.HALF_UP));
+        k.setKardexcostopromedio_a(costoU.setScale(6, RoundingMode.HALF_UP));
         saldo = k.getKardexstock();
         costoU = k.getKardexcostopromedio();
         costoT = k.getKardexcostototalstock();
@@ -136,17 +135,16 @@ public class RegrabadoProducto1 {
           }
 
           kt.setKardexstock(saldoT.add(kt.getKardexcantidad()));
-
           if (kt.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
-            kt.setKardexcostototalstock(costoTt.add(kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())));
+            kt.setKardexcostototalstock(costoTt.add(kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())).setScale(2, RoundingMode.HALF_UP));
             kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(kt.getKardexstock(), 6, RoundingMode.HALF_UP));
           } else {
             kt.setKardexcostototalstock(BigDecimal.ZERO);
-            kt.setKardexcostopromedio(kt.getKardexpreciocompra());
+            kt.setKardexcostopromedio(kt.getKardexpreciocompra().setScale(6, RoundingMode.HALF_UP));
           }
-          kt.setKardexcostototal(kt.getKardexcantidad().multiply(kt.getKardexpreciocompra()));
-          kt.setKardexcantidad_a(saldoT);
-          kt.setKardexcostopromedio_a(costoUt);
+          kt.setKardexcostototal(kt.getKardexcantidad().multiply(kt.getKardexpreciocompra()).setScale(2, RoundingMode.HALF_UP));
+          kt.setKardexcantidad_a(saldoT.setScale(5, RoundingMode.HALF_UP));
+          kt.setKardexcostopromedio_a(costoUt.setScale(6, RoundingMode.HALF_UP));
           saldoT = kt.getKardexstock();
           costoUt = kt.getKardexcostopromedio();
           costoTt = kt.getKardexcostototalstock();
@@ -162,31 +160,34 @@ public class RegrabadoProducto1 {
       }
 
       if (k.getKardextipotrx().trim().equals("NTI")) {
-        if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0 && k.getKardexnumref() != 0) {
+        k.setKardexcantidad(k.getKardexcantidad().setScale(6, RoundingMode.HALF_UP));
+        if (k.getKardextipo().trim().equals("PRODUCCION")
+                && k.getKardexfecha().compareTo(fechaCerrado) > 0
+                && k.getKardexnumref() != 0) {
           BigDecimal CostoProduccion = getCostoProduccion(k.getProductoscodigo(), k.getKardexnumref());
           k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad(), 6, RoundingMode.HALF_UP));
         }
-        k.setKardexstock(saldo.add(k.getKardexcantidad()));
 
+        k.setKardexstock(saldo.add(k.getKardexcantidad()).setScale(6, RoundingMode.HALF_UP));
         if ((k.getKardexstock().compareTo(BigDecimal.ZERO)) == 1) {
           if (saldo.multiply(costoU).compareTo(BigDecimal.ZERO) == 1) {
-            k.setKardexcostototalstock(costoT.add(k.getKardexpreciocompra().multiply(k.getKardexcantidad())));
+            k.setKardexcostototalstock(costoT.add(k.getKardexpreciocompra().multiply(k.getKardexcantidad())).setScale(2, RoundingMode.HALF_UP));
             BigDecimal CostoPromedio = k.getKardexcostototalstock().divide(k.getKardexstock(), 6, RoundingMode.HALF_UP);
             k.setKardexcostopromedio(CostoPromedio);
           } else {
-            k.setKardexcostopromedio(k.getKardexpreciocompra());
-            k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
+            k.setKardexcostopromedio(k.getKardexpreciocompra().setScale(6, RoundingMode.HALF_UP));
+            k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()).setScale(2, RoundingMode.HALF_UP));
           }
         } else {
           k.setKardexcostototalstock(BigDecimal.ZERO);
-          k.setKardexcostopromedio(k.getKardexpreciocompra());
+          k.setKardexcostopromedio(k.getKardexpreciocompra().setScale(6, RoundingMode.HALF_UP));
         }
-        k.setKardexcostototal(k.getKardexcantidad().multiply(k.getKardexpreciocompra()));
-        k.setKardexcantidad_a(saldo);
-        k.setKardexcostopromedio_a(costoU);
-        saldo = k.getKardexstock();
-        costoU = k.getKardexcostopromedio();
-        costoT = k.getKardexcostototalstock();
+        k.setKardexcostototal(k.getKardexcantidad().multiply(k.getKardexpreciocompra()).setScale(2, RoundingMode.HALF_UP));
+        k.setKardexcantidad_a(saldo.setScale(4, RoundingMode.HALF_UP));
+        k.setKardexcostopromedio_a(costoU.setScale(6, RoundingMode.HALF_UP));
+        saldo = k.getKardexstock().setScale(6, RoundingMode.HALF_UP);
+        costoU = k.getKardexcostopromedio().setScale(6, RoundingMode.HALF_UP);
+        costoT = k.getKardexcostototalstock().setScale(2, RoundingMode.HALF_UP);
         kRegrabado.add(k);
         for (Bodega b : aSaldosIni) {
           if (b.getCodigo().equals(k.getTbodcodigo().trim())) {
@@ -198,20 +199,25 @@ public class RegrabadoProducto1 {
       }
 
       if (k.getKardextipotrx().trim().equals("FAC")) {
-        k.setKardexstock(saldo.add(k.getKardexcantidad()));
-        k.setKardexcostopromedio(costoU);
-        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == -1 || k.getKardexstock().compareTo(BigDecimal.ZERO) == 0) {
+        k.setKardexstock(saldo.add(k.getKardexcantidad()).setScale(6, RoundingMode.HALF_UP));
+        k.setKardexcostopromedio(costoU.setScale(6, RoundingMode.HALF_UP));
+        if (k.getKardexstock().compareTo(BigDecimal.ZERO) == -1
+                || k.getKardexstock().compareTo(BigDecimal.ZERO) == 0) {
           k.setKardexcostototalstock(k.getKardexcostopromedio().multiply(BigDecimal.ZERO));
         } else {
-          k.setKardexcostototalstock(k.getKardexstock().multiply(k.getKardexcostopromedio()));
+          k.setKardexcostototalstock(
+                  k.getKardexstock().multiply(k.getKardexcostopromedio())
+                          .setScale(2, RoundingMode.HALF_UP));
         }
         k.setKardexpreciocompra(k.getKardexcostopromedio());
-        k.setKardexcostototal(k.getKardexcantidad().negate().multiply(costoU));
-        k.setKardexcantidad_a(saldo);
-        k.setKardexcostopromedio_a(costoU);
+        k.setKardexcostototal(
+                k.getKardexcantidad().negate().multiply(costoU)
+                        .setScale(2, RoundingMode.HALF_UP));
+        k.setKardexcantidad_a(saldo.setScale(6, RoundingMode.HALF_UP));
+        k.setKardexcostopromedio_a(costoU.setScale(6, RoundingMode.HALF_UP));
         saldo = k.getKardexstock();
-        costoU = k.getKardexcostopromedio();
-        costoT = k.getKardexcostototalstock();
+        costoU = k.getKardexcostopromedio().setScale(6, RoundingMode.HALF_UP);
+        costoT = k.getKardexcostototalstock().setScale(2, RoundingMode.HALF_UP);
         kRegrabado.add(k);
         for (Bodega b : aSaldosIni) {
           if (b.getCodigo().equals(k.getTbodcodigo().trim())) {

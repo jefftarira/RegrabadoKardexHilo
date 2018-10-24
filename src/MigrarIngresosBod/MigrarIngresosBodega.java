@@ -51,13 +51,6 @@ public class MigrarIngresosBodega {
         }
       }
 
-      // Completando datos de tipos de movimientos
-      for (MovimientoInv m : movs) {
-        if (m.getDescripcion().trim().equals(i.getNombreMovimiento().trim())) {
-          i.setIdMovimiento(m.getId());
-        }
-      }
-
       // Completando datos de bodegas
       for (BodegaInv b : bods) {
         if (b.getIdMarketsoft().trim().equals(i.getNombreBodega().trim())) {

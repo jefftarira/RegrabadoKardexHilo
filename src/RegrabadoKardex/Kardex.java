@@ -44,6 +44,10 @@ public class Kardex implements Comparable<Kardex> {
   private int kardexnumref;
   private int kardexregorden;
 
+  private int idUsuario;
+  private int idDivision;
+  private int idTipo;
+
   public Kardex(String kardexcodigodiv, String kardexanno, String kardextipotrx, int kardexnumero,
           int kardexlinea, int kardexcodigosec, String kardexorden, Date kardexfecha, String kardexhora,
           String productoscodigo, String tbodcodigo, String kardexlote, Date kardexcaducidad,
@@ -424,6 +428,30 @@ public class Kardex implements Comparable<Kardex> {
 
   public void setKardexnumref(int kardexnumref) {
     this.kardexnumref = kardexnumref;
+  }
+
+  public int getIdUsuario() {
+    return idUsuario;
+  }
+
+  public void setIdUsuario(int idUsuario) {
+    this.idUsuario = idUsuario;
+  }
+
+  public int getIdDivision() {
+    return idDivision;
+  }
+
+  public void setIdDivision(int idDivision) {
+    this.idDivision = idDivision;
+  }
+
+  public int getIdTipo() {
+    return idTipo;
+  }
+
+  public void setIdTipo(int idTipo) {
+    this.idTipo = idTipo;
   }
 
   @Override

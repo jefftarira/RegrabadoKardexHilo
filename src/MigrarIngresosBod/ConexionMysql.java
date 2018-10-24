@@ -9,17 +9,17 @@ import java.sql.SQLException;
 public class ConexionMysql {
   
   // DESARROLLO
-    private final String server = "localhost";
-    private final String dbname = "plastimet";
-    private final String port = "3306";
-    private final String user = "user";
-    private final String passw = "12345678";
+//    private final String server = "localhost";
+//    private final String dbname = "plastimet";
+//    private final String port = "3306";
+//    private final String user = "user";
+//    private final String passw = "12345678";
   
-//  private String server = "192.168.0.7";
-//  private final String dbname = "plastimet";
-//  private final String port = "3306";
-//  private final String user = "user";
-//  private final String passw = "PlastDbUser@1984";
+  private String server = "192.168.0.7";
+  private final String dbname = "plastimet";
+  private final String port = "3306";
+  private final String user = "user";
+  private final String passw = "PlastDbUser@1984";
   
 //  PRODUCCION
 //  private String server = "localhost";
