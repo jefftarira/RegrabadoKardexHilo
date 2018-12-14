@@ -210,6 +210,7 @@ public class DatosDAO {
           + "and idUsuario = ?\n"
           + "and idDivision = ? \n"
           + "and codigoProducto = ? \n"
+          + "      and cantidad = ?\n"
           + "and status = 'A'";
 
 //  public String uNotEgr = " UPDATE notegr "
@@ -245,7 +246,8 @@ public class DatosDAO {
           + "where idEgresoInv = ?\n"
           + "      and idUsuario = ?\n"
           + "      and idDivision = ?\n"
-          + "      and codigoProducto = ?\n"
+          + "      and codigoProducto = ?"
+          + "      and cantidad = ?\n"
           + "      and status = 'A' ";
 
   private final String sUsersSIP = "select\n"
@@ -538,8 +540,10 @@ public class DatosDAO {
     int maxKardexSec = 0;
     int cNoting = 0;
     int cNotIngdet = 0;
+    int cNotIngdetSip = 0;
     int cNotEgr = 0;
     int cNotegrdet = 0;
+    int cNotegrdetSip = 0;
 
     Date fechaCerrado = new Date((2015 - 1900), 8, 30);
     PreparedStatement ps;
@@ -634,7 +638,8 @@ public class DatosDAO {
             ps.setInt(4, k.getIdUsuario());
             ps.setInt(5, k.getIdDivision());
             ps.setString(6, k.getProductoscodigo().trim());
-            ps.executeUpdate();
+            ps.setBigDecimal(7, k.getKardexcantidad());
+            cNotIngdetSip += ps.executeUpdate();
           }
         }
         if (k.getKardextipotrx().trim().equals("NTE")) {
@@ -656,7 +661,14 @@ public class DatosDAO {
           ps.setInt(4, k.getIdUsuario());
           ps.setInt(5, k.getIdDivision());
           ps.setString(6, k.getProductoscodigo().trim());
-          ps.executeUpdate();
+          ps.setBigDecimal(7, k.getKardexcantidad().negate());
+
+//          System.out.println("precio de compra: " + k.getKardexpreciocompra()
+//                  + " Precio Total: " + k.getKardexcostototal() + " Numero: " + k.getKardexnumero()
+//                  + " idUsuario: " + k.getIdUsuario() + " idDivision: " + k.getIdDivision()
+//                  + " codigoProducto: " + k.getProductoscodigo().trim()
+//                  + " cantidad: " + k.getKardexcantidad());
+          cNotegrdetSip += ps.executeUpdate();
         }
       }
 
@@ -670,7 +682,9 @@ public class DatosDAO {
               + "Se actualizaron " + cNoting + " registros de notas de ingreso por produccion.\n"
               + "Se actualizaron " + cNotIngdet + " registros del detalle de notas de ingreso por produccion.\n"
               + "Se actualizaron " + cNotEgr + " notas de egreso .\n"
-              + "Se actualizaron " + cNotegrdet + " registros del detalle de notas de egreso .\n");
+              + "Se actualizaron " + cNotegrdet + " registros del detalle de notas de egreso .\n"
+              + "Se actualizaron " + cNotIngdetSip + " registros del detalle de notas de ingreso por produccion SIP.\n"
+              + "Se actualizaron " + cNotegrdetSip + " registros del detalle de notas de Egreso  SIP.\n");
 
       conP.Commit();
       conP.cerrar();

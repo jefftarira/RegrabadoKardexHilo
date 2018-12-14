@@ -50,7 +50,8 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
 
     System.out.println(aMovs.size());
 
-    ExecutorService executorService = Executors.newFixedThreadPool(8);
+//    ExecutorService executorService = Executors.newFixedThreadPool(8);
+    ExecutorService executorService = Executors.newWorkStealingPool();
     Future<ArrayList>[] futures = new Future[aMovs.size()];
     for (int i = 0; i < aMovs.size(); i++) {
       Movimiento m = aMovs.get(i);

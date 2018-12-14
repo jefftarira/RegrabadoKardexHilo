@@ -230,7 +230,7 @@ public class RegrabadoProducto1 {
       i++;
     }
 
-    System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
+//    System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
     return kRegrabado;
   }
 
@@ -324,16 +324,23 @@ public class RegrabadoProducto1 {
 
         ft = fp;
         //      Calculo de mano de obra directa
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
-        costoMod = costoMod.add((ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod()).multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
+        costoMod = costoMod.add(
+                (ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod())
+                        .multiply(ft.getHorasRot().multiply(new BigDecimal(ft.getPersonasRot()))));
+        costoMod = costoMod.add(
+                (ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod())
+                        .multiply(ft.getHorasSol().multiply(new BigDecimal(ft.getPersonasSol()))));
+        costoMod = costoMod.add(
+                (ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod())
+                        .multiply(ft.getHorasAca().multiply(new BigDecimal(ft.getPersonasAca()))));
+        costoMod = costoMod.add(
+                (ft.getFactorMod() == null ? BigDecimal.ZERO : ft.getFactorMod())
+                        .multiply(ft.getHorasTal().multiply(new BigDecimal(ft.getPersonasTal()))));
       }
     }
 
     // Calculo de costo CIF
     costoCif = costoCif.add((ft.getFactorCif() == null ? BigDecimal.ZERO : ft.getFactorCif()).multiply(costoMod));
-
     for (Materiales m : aMats) {
       if (m.getOrdenNumero() == orden) {
         //      Calculo de materiales
@@ -349,7 +356,6 @@ public class RegrabadoProducto1 {
         }
       }
     }
-
     costo = costoMateriales.add(costoCif.add(costoMod.add(costoGas)));
     return costo;
   }
