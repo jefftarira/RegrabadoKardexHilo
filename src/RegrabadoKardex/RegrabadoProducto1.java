@@ -230,7 +230,7 @@ public class RegrabadoProducto1 {
       i++;
     }
 
-//    System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
+    System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
     return kRegrabado;
   }
 

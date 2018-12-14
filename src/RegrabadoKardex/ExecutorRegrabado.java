@@ -1,5 +1,7 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.DB.ConexionPoolMysql;
+import RegrabadoKardex.DB.ConexionPoolPostgres;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -35,6 +37,10 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
   public static void main(String[] args)
           throws ParseException, ClassNotFoundException, SQLException,
           InterruptedException, ExecutionException {
+
+    ConexionPoolPostgres poolP = new ConexionPoolPostgres();
+    ConexionPoolMysql poolM = new ConexionPoolMysql();
+
     String iniDate = "01-01-2018";
     String finDate = "31-12-2018";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");

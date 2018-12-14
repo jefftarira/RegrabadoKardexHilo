@@ -1,7 +1,10 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.DB.ConexionPoolMysql;
+import RegrabadoKardex.DB.ConexionPoolPostgres;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,8 +16,8 @@ import java.util.GregorianCalendar;
 
 public class DatosDAO {
 
-  private final ConexionMysql conM;
-  private ConexionPostgres conP;
+  private final ConexionPoolMysql poolM;
+  private final ConexionPoolPostgres poolP;
 
   private String sDocumentos = " select     kardexcodigodiv,kardexanno,kardextipotrx,kardexnumero,kardexlinea,kardexorden, "
           + " kardexfecha,productotodo,productoscodigo,tbodcodigo,tbodcodigo2,kardexlote,kardexcaducidad,kardexdescripcion, "
@@ -271,8 +274,8 @@ public class DatosDAO {
           + " where status = 'A' ";
 
   public DatosDAO() {
-    conP = new ConexionPostgres();
-    conM = new ConexionMysql();
+    poolP = new ConexionPoolPostgres();
+    poolM = new ConexionPoolMysql();
   }
 
   public ArrayList getDocumentos(String codProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
@@ -281,7 +284,7 @@ public class DatosDAO {
     Kardex k;
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sDocumentos);
     ps.setDate(1, fechaIni);
     ps.setDate(2, fechaFin);
@@ -337,7 +340,7 @@ public class DatosDAO {
       Collections.sort(aDoc);
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return aDoc;
   }
 
@@ -346,7 +349,7 @@ public class DatosDAO {
     Movimiento m;
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sMovimientos);
     ps.setDate(1, fechaIni);
     ps.setDate(2, fechaFin);
@@ -362,7 +365,7 @@ public class DatosDAO {
       aMov.add(m);
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return aMov;
   }
 
@@ -371,7 +374,7 @@ public class DatosDAO {
 
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sSaldoIniSaldosInv);
     ps.setString(1, codigoProducto.trim().toUpperCase());
     ps.setString(2, codigoBodega.trim());
@@ -382,7 +385,7 @@ public class DatosDAO {
       b.setCostoUnitario(rs.getBigDecimal("saldosiinvcosto"));
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return b;
   }
 
@@ -391,7 +394,7 @@ public class DatosDAO {
 
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sSaldoMovAnt);
     ps.setString(1, codigoProducto.trim().toUpperCase());
     ps.setDate(2, fecha);
@@ -404,7 +407,7 @@ public class DatosDAO {
       b.setCostoTotal(rs.getBigDecimal("kardexcostototalstock"));
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return b;
   }
 
@@ -414,7 +417,7 @@ public class DatosDAO {
 
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sFactores);
     ps.setDate(1, fechaIni);
     ps.setDate(2, fechaFin);
@@ -440,7 +443,7 @@ public class DatosDAO {
       aFac.add(ft);
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return aFac;
   }
 
@@ -451,7 +454,7 @@ public class DatosDAO {
 
     ResultSet rs;
     PreparedStatement ps;
-    conP.conectar();
+    Connection conP = poolP.getDataSource().getConnection();
     ps = conP.prepareStatement(sMaterialesProduccion);
     ps.setString(1, codigoProducto);
     rs = ps.executeQuery();
@@ -469,14 +472,14 @@ public class DatosDAO {
       aMats.add(mt);
     }
     rs.close();
-    conP.cerrar();
+    conP.close();
     return aMats;
   }
 
   public ArrayList<Usuarios> getUsuariosSIP() throws ClassNotFoundException, SQLException {
     ArrayList<Usuarios> aUsers = new ArrayList<>();
     PreparedStatement ps;
-    conM.conectar();
+    Connection conM = poolM.getDataSource().getConnection();
     ps = conM.prepareStatement(sUsersSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -489,14 +492,14 @@ public class DatosDAO {
     }
 
     rs.close();
-    conM.cerrar();
+    conM.close();
     return aUsers;
   }
 
   public ArrayList<Division> getDivisionesSIP() throws ClassNotFoundException, SQLException {
     ArrayList<Division> lista = new ArrayList<>();
     PreparedStatement ps;
-    conM.conectar();
+    Connection conM = poolM.getDataSource().getConnection();
     ps = conM.prepareStatement(sDivisionSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -509,14 +512,14 @@ public class DatosDAO {
     }
 
     rs.close();
-    conM.cerrar();
+    conM.close();
     return lista;
   }
 
   public ArrayList<MovimientoInv> getTiposMovSIP() throws ClassNotFoundException, SQLException {
     ArrayList<MovimientoInv> lista = new ArrayList<>();
     PreparedStatement ps;
-    conM.conectar();
+    Connection conM = poolM.getDataSource().getConnection();
     ps = conM.prepareStatement(sTipoMovimientosSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -529,7 +532,7 @@ public class DatosDAO {
     }
 
     rs.close();
-    conM.cerrar();
+    conM.close();
     return lista;
   }
 
@@ -547,12 +550,12 @@ public class DatosDAO {
 
     Date fechaCerrado = new Date((2015 - 1900), 8, 30);
     PreparedStatement ps;
-    try {
-      conP.conectar();
-      conP.autoCommit(false);
+    Connection conP = poolP.getDataSource().getConnection();
+    conP.setAutoCommit(false);
 
-      conM.conectar();
-      conM.autoCommit(false);
+    Connection conM = poolM.getDataSource().getConnection();
+    conM.setAutoCommit(false);
+    try {
 
       //Se eliminan datos de kardex
       ps = conP.prepareStatement(dKardex);
@@ -567,6 +570,8 @@ public class DatosDAO {
         maxKardexSec = rs.getInt("maxreg");
       }
 
+      rs.close();
+      
       //Se ingresan datos al kardex;
       maxKardexSec++;
       for (Kardex k : aKardex) {
@@ -686,18 +691,18 @@ public class DatosDAO {
               + "Se actualizaron " + cNotIngdetSip + " registros del detalle de notas de ingreso por produccion SIP.\n"
               + "Se actualizaron " + cNotegrdetSip + " registros del detalle de notas de Egreso  SIP.\n");
 
-      conP.Commit();
-      conP.cerrar();
+      conP.commit();
+      conP.close();
 
-      conM.Commit();
-      conM.cerrar();
+      conM.commit();
+      conM.close();
 
     } catch (SQLException ex) {
-      conP.Rollback();
-      conP.cerrar();
+      conP.rollback();
+      conP.close();
 
-      conM.Rollback();
-      conM.cerrar();
+      conM.rollback();
+      conM.close();
 
       ex.printStackTrace();
       rAfectados = -1;
