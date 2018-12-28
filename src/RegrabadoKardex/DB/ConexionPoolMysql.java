@@ -7,11 +7,18 @@ public class ConexionPoolMysql {
   private static BasicDataSource basicDataSource;
 
   // DESARROLLO
-  private final String SERVER = "localhost";
+//  private final String SERVER = "localhost";
+//  private final String DBNAME = "plastimet";
+//  private final String PORT = "3306";
+//  private final String USER = "user";
+//  private final String PASSW = "12345678";
+  
+    // PRODUCCION
+  private final String SERVER = "192.168.0.7";
   private final String DBNAME = "plastimet";
   private final String PORT = "3306";
   private final String USER = "user";
-  private final String PASSW = "12345678";
+  private final String PASSW = "PlastDbUser@1984";
   private final String URL = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
 
   public ConexionPoolMysql() {

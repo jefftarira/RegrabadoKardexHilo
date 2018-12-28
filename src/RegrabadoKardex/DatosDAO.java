@@ -2,8 +2,6 @@ package RegrabadoKardex;
 
 import RegrabadoKardex.DB.ConexionPoolMysql;
 import RegrabadoKardex.DB.ConexionPoolPostgres;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -221,6 +219,8 @@ public class DatosDAO {
 //          + "WHERE notegrnumero = ? "
 //          + "      AND trim(notegrcreateuser) = ? "
 //          + "      AND trim(notegrcodigodiv) = ? ";
+  
+  
   private String uNotEgrs = "UPDATE notegr c "
           + "SET notegrpreciototal = (SELECT CASE "
           + "                                WHEN count(*) = 0 "
