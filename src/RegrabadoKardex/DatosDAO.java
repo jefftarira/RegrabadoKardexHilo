@@ -1,5 +1,13 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.Models.Movimiento;
+import RegrabadoKardex.Models.Materiales;
+import RegrabadoKardex.Models.FactorCosto;
+import RegrabadoKardex.Models.Usuarios;
+import RegrabadoKardex.Models.Kardex;
+import RegrabadoKardex.Models.MovimientoInv;
+import RegrabadoKardex.Models.Division;
+import RegrabadoKardex.Models.Bodega;
 import RegrabadoKardex.DB.ConexionPoolMysql;
 import RegrabadoKardex.DB.ConexionPoolPostgres;
 import java.sql.Connection;

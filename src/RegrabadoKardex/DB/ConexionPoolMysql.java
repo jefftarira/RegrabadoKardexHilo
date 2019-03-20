@@ -12,6 +12,7 @@ public class ConexionPoolMysql {
 //  private final String PORT = "3306";
 //  private final String USER = "user";
 //  private final String PASSW = "12345678";
+//  private final String URL = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
   
     // PRODUCCION
   private final String SERVER = "192.168.0.7";

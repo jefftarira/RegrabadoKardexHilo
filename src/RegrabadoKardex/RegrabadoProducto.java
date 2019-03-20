@@ -1,5 +1,10 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.Models.Movimiento;
+import RegrabadoKardex.Models.Materiales;
+import RegrabadoKardex.Models.FactorCosto;
+import RegrabadoKardex.Models.Kardex;
+import RegrabadoKardex.Models.Bodega;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;

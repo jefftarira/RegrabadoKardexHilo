@@ -1,5 +1,7 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.Models.Movimiento;
+import RegrabadoKardex.Models.Kardex;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;

@@ -1,5 +1,10 @@
 package RegrabadoKardex;
 
+import RegrabadoKardex.Models.Movimiento;
+import RegrabadoKardex.Models.Materiales;
+import RegrabadoKardex.Models.FactorCosto;
+import RegrabadoKardex.Models.Kardex;
+import RegrabadoKardex.Models.Bodega;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Date;
@@ -8,7 +13,7 @@ import java.util.ArrayList;
 
 public class RegrabadoProducto1 {
 
-  private DatosDAO db;
+  private DatosDAO DB;
 
   private ArrayList<FactorCosto> aFac = null;
   private ArrayList<Materiales> aMats = null;
@@ -17,26 +22,25 @@ public class RegrabadoProducto1 {
   private Date fechaFin;
 
   public RegrabadoProducto1(Movimiento mov, Date fechaI, Date fechaF) {
-    db = new DatosDAO();
+    DB = new DatosDAO();
     this.m = mov;
     this.fechaIni = fechaI;
     this.fechaFin = fechaF;
   }
 
   public ArrayList<Kardex> regrabadoProducto() throws ClassNotFoundException, SQLException {
-    ArrayList<Kardex> aDocs = null;
 
+    ArrayList<Kardex> aDocs;
     ArrayList<Kardex> kRegrabado = new ArrayList<>();
     ArrayList<Bodega> aSaldosIni = new ArrayList<>();
 
     Date fechaCerrado = new Date((2015 - 1900), 8, 30);
-    aFac = db.getFactores(m.getProductoscodigo(), fechaIni, fechaFin);
-    aDocs = db.getDocumentos(m.getProductoscodigo(), fechaIni, fechaFin);
-    aMats = db.getMateriales(m.getProductoscodigo(), fechaIni, fechaFin);
+    aFac = DB.getFactores(m.getProductoscodigo(), fechaIni, fechaFin);
+    aDocs = DB.getDocumentos(m.getProductoscodigo(), fechaIni, fechaFin);
+    aMats = DB.getMateriales(m.getProductoscodigo(), fechaIni, fechaFin);
 
-    int i = 0; //Conteo de documentos afectados
     for (Kardex k : aDocs) {
-//    Comprueba saldo inicial
+      // Comprueba saldo inicial
       int existe = 0;
       BigDecimal saldo = BigDecimal.ZERO;
       BigDecimal costoU = BigDecimal.ZERO;
@@ -227,7 +231,6 @@ public class RegrabadoProducto1 {
           }
         }
       }
-      i++;
     }
 
     System.out.println("   || " + aDocs.size() + " Datos procesados de " + m.getProductoscodigo());
@@ -238,7 +241,7 @@ public class RegrabadoProducto1 {
     Bodega respuestaSaldo;
     Date fechaIni = new Date((2015 - 1900), 8, 1);
     if (bInicial.getFecha().compareTo(fechaIni) == 0) {
-      respuestaSaldo = db.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
+      respuestaSaldo = DB.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
       if (respuestaSaldo.getCantidad() == null) {
         respuestaSaldo.setCodigo(bInicial.getCodigo());
         respuestaSaldo.setCantidad(BigDecimal.ZERO);
@@ -248,9 +251,9 @@ public class RegrabadoProducto1 {
         respuestaSaldo.setCostoTotal(respuestaSaldo.getCantidad().multiply(respuestaSaldo.getCostoUnitario()));
       }
     } else {
-      respuestaSaldo = db.getSaldoMovAnt(codigoProducto, bInicial.getCodigo(), bInicial.getFecha());
+      respuestaSaldo = DB.getSaldoMovAnt(codigoProducto, bInicial.getCodigo(), bInicial.getFecha());
       if (respuestaSaldo.getCantidad() == null) {
-        respuestaSaldo = db.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
+        respuestaSaldo = DB.getSaldoIniSaldosInv(codigoProducto, bInicial.getCodigo());
         if (respuestaSaldo.getCantidad() == null) {
           respuestaSaldo.setCodigo(bInicial.getCodigo());
           respuestaSaldo.setCantidad(BigDecimal.ZERO);
@@ -288,7 +291,7 @@ public class RegrabadoProducto1 {
       }
     }
 
-//    FactorCosto ft = db.getFactores(orden);
+    // FactorCosto ft = db.getFactores(orden);
     for (Materiales m : aMats) {
       if (m.getOrdenNumero() == orden) {
         //      Calculo de materiales

@@ -1,4 +1,4 @@
-package RegrabadoKardex;
+package RegrabadoKardex.Models;
 
 import java.math.BigDecimal;
 import java.sql.Date;

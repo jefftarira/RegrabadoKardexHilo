@@ -5,9 +5,8 @@ import java.math.RoundingMode;
 
 public class Redondear {
 
-  public BigDecimal getRound(BigDecimal num, int decimals) {
-    BigDecimal bd = num.setScale(decimals, RoundingMode.HALF_EVEN);
-    return bd;
+  public static final BigDecimal getRound(BigDecimal num, int decimals) {
+    return num.setScale(decimals, RoundingMode.HALF_EVEN);    
   }
 
 }

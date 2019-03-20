@@ -1,4 +1,4 @@
-package RegrabadoKardex;
+package RegrabadoKardex.Models;
 
 import MigrarIngresosBod.MODELS.*;
 

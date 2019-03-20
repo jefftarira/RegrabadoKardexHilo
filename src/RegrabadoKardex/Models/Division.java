@@ -1,6 +1,4 @@
-package RegrabadoKardex;
-
-import MigrarIngresosBod.MODELS.*;
+package RegrabadoKardex.Models;
 
 public class Division {
 
