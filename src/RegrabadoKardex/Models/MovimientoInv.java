@@ -1,7 +1,5 @@
 package RegrabadoKardex.Models;
 
-import MigrarIngresosBod.MODELS.*;
-
 public class MovimientoInv {
 
   private int id;

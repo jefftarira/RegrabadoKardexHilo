@@ -2,7 +2,7 @@ package RegrabadoKardex.DB;
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
-public class ConexionPoolMysql {
+public class PoolMysql {
 
   private static BasicDataSource basicDataSource;
 
@@ -12,17 +12,18 @@ public class ConexionPoolMysql {
 //  private final String PORT = "3306";
 //  private final String USER = "user";
 //  private final String PASSW = "12345678";
-//  private final String URL = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
+
   
     // PRODUCCION
   private final String SERVER = "192.168.0.7";
   private final String DBNAME = "plastimet";
   private final String PORT = "3306";
   private final String USER = "user";
-  private final String PASSW = "PlastDbUser@1984";
-  private final String URL = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
+  private final String PASSW = "PlastDbUser@1984"; 
+  
+    private final String URL = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
 
-  public ConexionPoolMysql() {
+  public PoolMysql() {
     inicializaDataSource();
   }
 

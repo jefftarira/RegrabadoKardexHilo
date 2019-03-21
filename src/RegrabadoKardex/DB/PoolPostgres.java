@@ -2,7 +2,7 @@ package RegrabadoKardex.DB;
 
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 
-public class ConexionPoolPostgres {
+public class PoolPostgres {
 
   private static BasicDataSource basicDataSource;
 
@@ -12,18 +12,17 @@ public class ConexionPoolPostgres {
 //  private final String PORT = "5432";
 //  private final String USER = "postgres";
 //  private final String PASSW = "Csdla2008!";
-  
-    // PRODUCCION
+
+  // PRODUCCION
   private final String SERVER = "192.168.0.4";
   private final String DBNAME = "PlastimetV10P";
   private final String PORT = "5432";
   private final String USER = "postgres";
   private final String PASSW = "Csdla2008!";
   
-  
   private final String URL = "jdbc:postgresql://" + SERVER + ":" + PORT + "/" + DBNAME;
 
-  public ConexionPoolPostgres() {
+  public PoolPostgres() {
     inicializaDataSource();
   }
 

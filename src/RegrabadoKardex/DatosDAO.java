@@ -8,8 +8,8 @@ import RegrabadoKardex.Models.Kardex;
 import RegrabadoKardex.Models.MovimientoInv;
 import RegrabadoKardex.Models.Division;
 import RegrabadoKardex.Models.Bodega;
-import RegrabadoKardex.DB.ConexionPoolMysql;
-import RegrabadoKardex.DB.ConexionPoolPostgres;
+import RegrabadoKardex.DB.PoolMysql;
+import RegrabadoKardex.DB.PoolPostgres;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -22,281 +22,103 @@ import java.util.GregorianCalendar;
 
 public class DatosDAO {
 
-  private final ConexionPoolMysql poolM;
-  private final ConexionPoolPostgres poolP;
+  private final PoolMysql poolM;
+  private final PoolPostgres poolP;
 
-  private String sDocumentos = " select     kardexcodigodiv,kardexanno,kardextipotrx,kardexnumero,kardexlinea,kardexorden, "
-          + " kardexfecha,productotodo,productoscodigo,tbodcodigo,tbodcodigo2,kardexlote,kardexcaducidad,kardexdescripcion, "
-          + " kardextipo,kardexcodigoven1,kardexpreciocompra,kardexprecioventa,kardexvalordescuento, "
-          + " kardexcantidad,kardexusuario,kardexnumref,kardexregorden "
-          + " from( "
-          + " ( "
-          + "   select  d.facturacodigodiv as kardexcodigodiv,d.facturaanno as kardexanno,'FAC'::text as kardextipotrx, "
-          + "           d.facturanumero as kardexnumero,d.detfaclinea as kardexlinea,1 as kardexorden, "
-          + "           c.facturafecha as kardexfecha,' '::text as productotodo,d.productoscodigo as productoscodigo,d.tbodcodigo as tbodcodigo, "
-          + "           ''::text as tbodcodigo2,''::text as kardexlote,c.srifacfechafue as kardexcaducidad,'FACTURA'::text as kardexdescripcion, "
-          + "           'VENTA'::text as kardextipo,c.vendedorescodigo as kardexcodigoven1,d.detfacprecio as kardexpreciocompra, "
-          + "           d.detfacprecio as kardexprecioventa, d.detfacvalordescuento as kardexvalordescuento, "
-          + "           d.detfaccantidad*-1 as kardexcantidad,c.facturacreateuser as kardexusuario, "
-          + "           0 as kardexnumref,50 as kardexregorden "
-          + "   from   facturadetfac d,factura c "
-          + "   where  c.facturanumero = d.facturanumero "
-          + "   and    c.facturacodigodiv = d.facturacodigodiv "
-          + "   and    (c.facturacontabilizado = 'PO' or c.facturacontabilizado = 'SI') "
-          + "   and    c.facturafecha >=  ? "
-          + "   and    c.facturafecha <= ? "
-          + "   and    d.productoscodigo = ? "
-          + " ) "
-          + " UNION "
-          + " ( "
-          + "   select  d.notingcodigodiv as notingcodigodiv,d.notinganno as kardexanno,'NTI' as kardextipotrx,"
-          + "           d.notingnumero as kardexnumero,d.detntiline as kardexlinea,1 as kardexorden, "
-          + "       	c.notingfecha as kardexfecha, "
-          + "           ( select  o.mpaproductoscodigo "
-          + "             from    ordprodetpro o  "
-          + "             where	o.ordpronumero = notingcegnum "
-          + "             and   o.mpaproductoscodigo = d.productoscodigo limit 1 "
-          + "           ) as productotodo, "
-          + "           d.productoscodigo as productoscodigo,d.detnticodigobodega as tbodcodigo, "
-          + "           '' as tbodcodigo2,c.notingloteprod as kardexlote,c.notingfechacaducidad as kardexcaducidad,c.notingconcepto as kardexdescripcion, "
-          + "           c.notingtipo as kardextipo,'' as kardexcodigoven1,d.detntipreciounitario as kardexpreciocompra, "
-          + "           0 as kardexprecioventa, 0 as kardexvalordescuento,d.detnticantidad as kardexcantidad,c.notingcreateuser as kardexusuario, "
-          + "           c.notingcegnum as kardexnumref,10 as kardexregorden "
-          + "   from    notingdetnti d,noting c "
-          + "   where   c.notingnumero = d.notingnumero "
-          + "   and     c.notingcreateuser = d.notingcreateuser "
-          + "   and     c.notingcodigodiv = d.notingcodigodiv "
-          + "   and     (c.notingcontab = 'SI' or c.notingcontab = 'PO') "
-          + "   and     c.notingfecha >= ? "
-          + "   and     c.notingfecha <= ? "
-          + "   and     d.productoscodigo = ? "
-          + " )  "
-          + " UNION "
-          + " (  "
-          + "   select  d.notegrcodigodiv as kardexcodigodiv,d.notegranno as kardexanno,'NTE' as kardextipotrx, "
-          + "           d.notegrnumero as kardexnumero,d.detnteline as kardexlinea,1 as kardexorden, "
-          + "           c.notegrfecha as kardexfecha, "
-          + "           ( select o.productoscodigo "
-          + "             from ordpro o "
-          + "             where o.ordpronumero = (CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' "
-          + "                                   			THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
-          + "                                           ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
-          + "                                     END) "
-          + "             limit 1 "
-          + "          ) as productotodo, "
-          + "          d.productoscodigo as productoscodigo,d.detntebodega1 as tbodcodigo, "
-          + "          d.detntebodega2 as tbodcodigo2,c.notegrloteprod as kardexlote,c.notegrfechacaducidad as kardexcaducidad, "
-          + "          c.notegrconcepto as kardexdescripcion,c.notegrtipo as kardextipo, "
-          + "          '' as kardexcodigoven1,d.detntepreciounitario as kardexpreciocompra, "
-          + "          0 as kardexprecioventa, 0 as kardexvalordescuento, "
-          + "          d.detntecantidad*-1 as kardexcantidad,c.notegrcreateuser as kardexusuario,"
-          + "          CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' "
-          + "                 THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
-          + "             	ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
-          + "          END as kardexnumref,40 as kardexregorden "
-          + "          from   notegrdetnte d,notegr c "
-          + "          where  c.notegrnumero = d.notegrnumero "
-          + "          and    c.notegrcreateuser = d.notegrcreateuser "
-          + "          and    c.notegrcodigodiv = d.notegrcodigodiv "
-          + "          and    (c.notegrcontab = 'SI' or c.notegrcontab = 'PO') "
-          + "          and    c.notegrfecha >= ? "
-          + "          and    c.notegrfecha <= ? "
-          + "          and    d.productoscodigo = ? "
-          + " )"
-          + " ) as ss order by kardexfecha ";
-
-  private String sMovimientos = " select  productoscodigo,sum(total) total\n"
-          + " from(( \n"
-          + "	select	d.productoscodigo as productoscodigo,count(*) as total\n"
-          + "	from	facturadetfac d,factura c \n"
-          + "	where	c.facturanumero = d.facturanumero \n"
-          + "	and	c.facturacodigodiv = d.facturacodigodiv \n"
-          + "	and	(c.facturacontabilizado = 'PO' or c.facturacontabilizado = 'SI')\n"
-          + "	and	c.facturafecha >= ? \n"
-          + "	and	c.facturafecha <= ? \n"
-          + "	group	by 1\n"
-          + " ) \n"
-          + " UNION\n"
-          + " ( 	select	d.productoscodigo as productoscodigo,count(*) as total\n"
-          + "	from	notingdetnti d,noting c \n"
-          + "	where	c.notingnumero = d.notingnumero \n"
-          + "	and	c.notingcreateuser = d.notingcreateuser \n"
-          + "	and	c.notingcodigodiv = d.notingcodigodiv \n"
-          + "	and	(c.notingcontab = 'SI' or c.notingcontab = 'PO') \n"
-          + "	and	c.notingfecha >= ? \n"
-          + "	and	c.notingfecha <= ?\n"
-          + "	group	by 1\n"
-          + " )  \n"
-          + " UNION\n"
-          + " ( 	select	d.productoscodigo as productoscodigo,count(*) as total\n"
-          + "	from	notegrdetnte d,notegr c \n"
-          + "	where	c.notegrnumero = d.notegrnumero \n"
-          + "	and	c.notegrcreateuser = d.notegrcreateuser \n"
-          + "	and	c.notegrcodigodiv = d.notegrcodigodiv \n"
-          + "	and	(c.notegrcontab = 'SI' or c.notegrcontab = 'PO') \n"
-          + "	and	c.notegrfecha >= ? \n"
-          + "	and	c.notegrfecha <= ? \n"
-          + "	group	by 1\n "
-          + " )\n"
-          + " )as ss  group by 1 order by 1 ";
-
-  private String sSaldoIniSaldosInv = " select	productoscodigo,saldosiinvbodegadefault,saldosiinvcantidad,saldosiinvcosto "
-          + " from	saldosiinv "
-          + " where	productoscodigo = ? "
-          + " and	saldosiinvbodegadefault = ? "
-          + " limit 1 ";
-
-  private String sSaldoMovAnt = " select productoscodigo,tbodcodigo,kardexstock,kardexcostopromedio,kardexcostototalstock "
-          + " from	kardex where productoscodigo=? and kardexfecha < ? and tbodcodigo = ? "
-          + " order	by kardexfecha desc, kardexcodigosec desc limit 1 ";
-
-  private String sFactores = "select o.ordpronumero,p.productoscodigo,p.tscatcodigo,f.tscatmanodeobra,f.tscatggproduccion,f.tscatgas, "
-          + "	o.ordpronumpersonas,o.ordprohorasproduccion,o.ordpronumperss,o.ordprohorasprods, "
-          + "	o.ordpronumpersa,o.ordprohorasproda,o.ordpronumperst,o.ordprohorasprodt "
-          + "          from productos p, tscat f, ordpro o, noting i "
-          + "          where p.tscatcodigo = f.tscatcodigo "
-          + "          and p.productoscodigo = o.productoscodigo "
-          + "          and o.ordpronumero = i.notingcegnum\n"
-          + "          and i.notingcodigodiv = '004' "
-          + "          and trim(i.notingtipo) ='PRODUCCION' "
-          + "          and i.notingfecha>= ? "
-          + "          and i.notingfecha<= ? "
-          + "          and o.productoscodigo = ? ";
-
-  private String sMaterialesProduccion = " select o.ordpronumero,o.productoscodigo as productoc,d.productoscodigo as productod, "
-          + "	p.tcatcodigo,d.detntecantidad,d.detntepreciounitario, "
-          + "	c.notegrnumero,c.notegrcreateuser,c.notegrcodigodiv "
-          + " from notegr c, notegrdetnte d, productos p, ordpro o\n"
-          + " where c.notegrcodigodiv = '004' "
-          + " and c.notegrcodigodiv = d.notegrcodigodiv "
-          + " and c.notegrtipo = 'PRODUCCION' "
-          + " and c.notegrnumero = d.notegrnumero "
-          + " and c.notegrcreateuser = d.notegrcreateuser "
-          + " and p.productoscodigo = d.productoscodigo "
-          + " and o.ordpronumero = CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
-          + "				ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
-          + "		     END "
-          + " and o.productoscodigo = ? "
-          + " order by o.ordpronumero ";
-
-  public String sMaxKardexCodigo = " select max(kardexcodigosec) as maxreg from kardex ";
-
-  private String dKardex = " delete from kardex where kardexfecha>= ? and kardexfecha<= ? ";
-
-  private String iKardex = " INSERT INTO public.kardex( "
-          + "            kardexcodigodiv, kardexanno, kardextipotrx, kardexnumero, kardexlinea, "
-          + "            kardexcodigosec, kardexorden, kardexfecha, kardexhora, productoscodigo, "
-          + "            tbodcodigo, kardexlote, kardexcaducidad, kardexdescripcion, kardextipo, "
-          + "            kardexcodigoven1, kardexpreciocompra, kardexprecioventa, kardexvalordescuento, "
-          + "            kardexcantidad, kardexcostopromedio, kardexcostototal, kardexstock, "
-          + "            kardexcantidad_a, kardexcostopromedio_a, kardexcostototalstock, "
-          + "            kardexcreateuser, kardexcreatedate, kardexcreatepgm, kardexupdateuser, "
-          + "            kardexupdatedate, kardexupdatetime, kardexupdatepgm, kardexusuario) "
-          + "    VALUES (?, ?, ?, ?, ?, "
-          + "            ?, ?, ?, ?, ?, "
-          + "            ?, ?, ?, ?, ?, "
-          + "            ?, ?, ?, ?, "
-          + "            ?, ?, ?, ?, "
-          + "            ?, ?, ?, "
-          + "            ?, CURRENT_DATE, ?, ?, "
-          + "            CURRENT_DATE, ?, ?, ?) ";
-
-  private String uNotIng = " update noting "
-          + " set notingpreciototal = ? "
-          + " where trim(notingcodigodiv) = ? "
-          + " and  notingnumero = ? "
-          + " and trim(notingcreateuser) = ? "
-          + " and trim(notingtipo)= ? ";
-
-  private String uNotIngDet = " update notingdetnti "
-          + " set detntipreciounitario = ?, detntipreciototal = ? "
-          + " where notingnumero= ? AND trim(notingcreateuser)= ? and trim(notingcodigodiv)= ? and trim(productoscodigo)  = ? ";
-
-  private String uIngresInvDetalleSip = "update ingresoinvdetalle\n"
-          + "set costoUnitario = ?,\n"
-          + "  costoTotal = ? \n"
-          + "where idIngresoInv = ?\n"
-          + "and idUsuario = ?\n"
-          + "and idDivision = ? \n"
-          + "and codigoProducto = ? \n"
-          + "      and cantidad = ?\n"
-          + "and status = 'A'";
-
-//  public String uNotEgr = " UPDATE notegr "
-//          + "SET notegrpreciototal = ? "
-//          + "WHERE notegrnumero = ? "
-//          + "      AND trim(notegrcreateuser) = ? "
-//          + "      AND trim(notegrcodigodiv) = ? ";
-  
-  
-  private String uNotEgrs = "UPDATE notegr c "
-          + "SET notegrpreciototal = (SELECT CASE "
-          + "                                WHEN count(*) = 0 "
-          + "                                  THEN 0.00 "
-          + "                                ELSE sum(d.detntepreciototal) "
-          + "                                END "
-          + "                         FROM notegrdetnte d "
-          + "                         WHERE c.notegrnumero = d.notegrnumero "
-          + "                               AND trim(c.notegrcreateuser) = trim(d.notegrcreateuser) "
-          + "                               AND trim(c.notegrcodigodiv) = trim(d.notegrcodigodiv)) "
-          + "WHERE c.notegrfecha >= ? "
-          + "      AND c.notegrfecha <= ? "
-          + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
-
-  private String uNotEgrDet = " UPDATE notegrdetnte "
-          + "SET detntepreciounitario = ?, detntepreciototal = ?, detntek2cost = ? "
-          + "WHERE notegrnumero = ? "
-          + "      AND trim(notegrcreateuser) =? "
-          + "      AND trim(notegrcodigodiv) =? "
-          + "      AND trim(productoscodigo) = ? "
-          + "      AND detnteline = ? ";
-
-  private String uEgresoInvDetalleSip = "update egresoinvdetalle\n"
-          + "set costoUnitario = ?,\n"
-          + "  costoTotal      = ?\n"
-          + "where idEgresoInv = ?\n"
-          + "      and idUsuario = ?\n"
-          + "      and idDivision = ?\n"
-          + "      and codigoProducto = ?"
-          + "      and cantidad = ?\n"
-          + "      and status = 'A' ";
-
-  private final String sUsersSIP = "select\n"
-          + "  id,\n"
-          + "  usuario\n"
-          + "from usuarios ";
-
-  private final String sDivisionSIP = "select\n"
-          + "  id,\n"
-          + "  idmarketsoft,\n"
-          + "  descripcion,\n"
-          + "  status\n"
-          + "from divisiones ";
-
-  private final String sTipoMovimientosSIP = "select\n"
-          + "  id,\n"
-          + "  descripcion,\n"
-          + "  documento,\n"
-          + "  status\n"
-          + "from tiposmovimientosinv\n"
-          + " where status = 'A' ";
-
-  public DatosDAO() {
-    poolP = new ConexionPoolPostgres();
-    poolM = new ConexionPoolMysql();
+  DatosDAO() {
+    poolP = new PoolPostgres();
+    poolM = new PoolMysql();
   }
 
-  public ArrayList getDocumentos(String codProducto, Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
+  ArrayList<Kardex> getDocumentos(String codProducto, Date fechaIni, Date fechaFin)
+          throws SQLException {
 
     ArrayList<Kardex> aDoc = new ArrayList<>();
     Kardex k;
     ResultSet rs;
     PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
-    ps = conP.prepareStatement(sDocumentos);
-    ps.setDate(1, fechaIni);
-    ps.setDate(2, fechaFin);
-    ps.setString(3, codProducto.trim().toUpperCase());
+
+    String sDocumentos = " select     kardexcodigodiv,kardexanno,kardextipotrx,kardexnumero,kardexlinea,kardexorden, "
+            + " kardexfecha,productotodo,productoscodigo,tbodcodigo,tbodcodigo2,kardexlote,kardexcaducidad,kardexdescripcion, "
+            + " kardextipo,kardexcodigoven1,kardexpreciocompra,kardexprecioventa,kardexvalordescuento, "
+            + " kardexcantidad,kardexusuario,kardexnumref,kardexregorden "
+            + " from( "
+            + " ( "
+            + "   select  d.facturacodigodiv as kardexcodigodiv,d.facturaanno as kardexanno,'FAC'::text as kardextipotrx, "
+            + "           d.facturanumero as kardexnumero,d.detfaclinea as kardexlinea,1 as kardexorden, "
+            + "           c.facturafecha as kardexfecha,' '::text as productotodo,d.productoscodigo as productoscodigo,d.tbodcodigo as tbodcodigo, "
+            + "           ''::text as tbodcodigo2,''::text as kardexlote,c.srifacfechafue as kardexcaducidad,'FACTURA'::text as kardexdescripcion, "
+            + "           'VENTA'::text as kardextipo,c.vendedorescodigo as kardexcodigoven1,d.detfacprecio as kardexpreciocompra, "
+            + "           d.detfacprecio as kardexprecioventa, d.detfacvalordescuento as kardexvalordescuento, "
+            + "           d.detfaccantidad*-1 as kardexcantidad,c.facturacreateuser as kardexusuario, "
+            + "           0 as kardexnumref,50 as kardexregorden "
+            + "   from   facturadetfac d,factura c "
+            + "   where  c.facturanumero = d.facturanumero "
+            + "   and    c.facturacodigodiv = d.facturacodigodiv "
+            + "   and    (c.facturacontabilizado = 'PO' or c.facturacontabilizado = 'SI') "
+            + "   and    c.facturafecha >=  ? "
+            + "   and    c.facturafecha <= ? "
+            + "   and    d.productoscodigo = ? "
+            + " ) "
+            + " UNION "
+            + " ( "
+            + "   select  d.notingcodigodiv as notingcodigodiv,d.notinganno as kardexanno,'NTI' as kardextipotrx,"
+            + "           d.notingnumero as kardexnumero,d.detntiline as kardexlinea,1 as kardexorden, "
+            + "       	c.notingfecha as kardexfecha, "
+            + "           ( select  o.mpaproductoscodigo "
+            + "             from    ordprodetpro o  "
+            + "             where	o.ordpronumero = notingcegnum "
+            + "             and   o.mpaproductoscodigo = d.productoscodigo limit 1 "
+            + "           ) as productotodo, "
+            + "           d.productoscodigo as productoscodigo,d.detnticodigobodega as tbodcodigo, "
+            + "           '' as tbodcodigo2,c.notingloteprod as kardexlote,c.notingfechacaducidad as kardexcaducidad,c.notingconcepto as kardexdescripcion, "
+            + "           c.notingtipo as kardextipo,'' as kardexcodigoven1,d.detntipreciounitario as kardexpreciocompra, "
+            + "           0 as kardexprecioventa, 0 as kardexvalordescuento,d.detnticantidad as kardexcantidad,c.notingcreateuser as kardexusuario, "
+            + "           c.notingcegnum as kardexnumref,10 as kardexregorden "
+            + "   from    notingdetnti d,noting c "
+            + "   where   c.notingnumero = d.notingnumero "
+            + "   and     c.notingcreateuser = d.notingcreateuser "
+            + "   and     c.notingcodigodiv = d.notingcodigodiv "
+            + "   and     (c.notingcontab = 'SI' or c.notingcontab = 'PO') "
+            + "   and     c.notingfecha >= ? "
+            + "   and     c.notingfecha <= ? "
+            + "   and     d.productoscodigo = ? "
+            + " )  "
+            + " UNION "
+            + " (  "
+            + "   select  d.notegrcodigodiv as kardexcodigodiv,d.notegranno as kardexanno,'NTE' as kardextipotrx, "
+            + "           d.notegrnumero as kardexnumero,d.detnteline as kardexlinea,1 as kardexorden, "
+            + "           c.notegrfecha as kardexfecha, "
+            + "           ( select o.productoscodigo "
+            + "             from ordpro o "
+            + "             where o.ordpronumero = (CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' "
+            + "                                   			THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
+            + "                                           ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
+            + "                                     END) "
+            + "             limit 1 "
+            + "          ) as productotodo, "
+            + "          d.productoscodigo as productoscodigo,d.detntebodega1 as tbodcodigo, "
+            + "          d.detntebodega2 as tbodcodigo2,c.notegrloteprod as kardexlote,c.notegrfechacaducidad as kardexcaducidad, "
+            + "          c.notegrconcepto as kardexdescripcion,c.notegrtipo as kardextipo, "
+            + "          '' as kardexcodigoven1,d.detntepreciounitario as kardexpreciocompra, "
+            + "          0 as kardexprecioventa, 0 as kardexvalordescuento, "
+            + "          d.detntecantidad*-1 as kardexcantidad,c.notegrcreateuser as kardexusuario,"
+            + "          CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' "
+            + "                 THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
+            + "             	ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
+            + "          END as kardexnumref,40 as kardexregorden "
+            + "          from   notegrdetnte d,notegr c "
+            + "          where  c.notegrnumero = d.notegrnumero "
+            + "          and    c.notegrcreateuser = d.notegrcreateuser "
+            + "          and    c.notegrcodigodiv = d.notegrcodigodiv "
+            + "          and    (c.notegrcontab = 'SI' or c.notegrcontab = 'PO') "
+            + "          and    c.notegrfecha >= ? "
+            + "          and    c.notegrfecha <= ? "
+            + "          and    d.productoscodigo = ? "
+            + " )"
+            + " ) as ss order by kardexfecha ";
+    ps = getPreparedStatement(codProducto, fechaIni, fechaFin, conP, sDocumentos);
     ps.setDate(4, fechaIni);
     ps.setDate(5, fechaFin);
     ps.setString(6, codProducto.trim().toUpperCase());
@@ -352,12 +174,46 @@ public class DatosDAO {
     return aDoc;
   }
 
-  public ArrayList getMovimientos(Date fechaIni, Date fechaFin) throws ClassNotFoundException, SQLException {
+  ArrayList<Movimiento> getMovimientos(Date fechaIni, Date fechaFin) throws SQLException {
     ArrayList<Movimiento> aMov = new ArrayList<>();
     Movimiento m;
     ResultSet rs;
     PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
+    String sMovimientos = " select  productoscodigo,sum(total) total"
+            + " from(( "
+            + "	select	d.productoscodigo as productoscodigo,count(*) as total "
+            + "	from	facturadetfac d,factura c "
+            + "	where	c.facturanumero = d.facturanumero "
+            + "	and	c.facturacodigodiv = d.facturacodigodiv "
+            + "	and	(c.facturacontabilizado = 'PO' or c.facturacontabilizado = 'SI') "
+            + "	and	c.facturafecha >= ?  "
+            + "	and	c.facturafecha <= ? "
+            + "	group	by 1 "
+            + " ) "
+            + " UNION "
+            + " ( 	select	d.productoscodigo as productoscodigo,count(*) as total "
+            + "	from	notingdetnti d,noting c "
+            + "	where	c.notingnumero = d.notingnumero "
+            + "	and	c.notingcreateuser = d.notingcreateuser "
+            + "	and	c.notingcodigodiv = d.notingcodigodiv "
+            + "	and	(c.notingcontab = 'SI' or c.notingcontab = 'PO') "
+            + "	and	c.notingfecha >= ? "
+            + "	and	c.notingfecha <= ? "
+            + "	group	by 1 "
+            + " ) "
+            + " UNION "
+            + " ( 	select	d.productoscodigo as productoscodigo,count(*) as total "
+            + "	from	notegrdetnte d,notegr c "
+            + "	where	c.notegrnumero = d.notegrnumero "
+            + "	and	c.notegrcreateuser = d.notegrcreateuser "
+            + "	and	c.notegrcodigodiv = d.notegrcodigodiv "
+            + "	and	(c.notegrcontab = 'SI' or c.notegrcontab = 'PO') "
+            + "	and	c.notegrfecha >= ? "
+            + "	and	c.notegrfecha <= ? "
+            + "	group	by 1 "
+            + " ) "
+            + " )as ss  group by 1 order by 1 ";
     ps = conP.prepareStatement(sMovimientos);
     ps.setDate(1, fechaIni);
     ps.setDate(2, fechaFin);
@@ -377,16 +233,21 @@ public class DatosDAO {
     return aMov;
   }
 
-  public Bodega getSaldoIniSaldosInv(String codigoProducto, String codigoBodega) throws ClassNotFoundException, SQLException {
+  Bodega getSaldoIniSaldosInv(String codigoProducto, String codigoBodega)
+          throws SQLException {
     Bodega b = new Bodega();
 
-    ResultSet rs;
     PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
+    String sSaldoIniSaldosInv = " select	productoscodigo,saldosiinvbodegadefault,saldosiinvcantidad,saldosiinvcosto "
+            + " from	saldosiinv "
+            + " where	productoscodigo = ? "
+            + " and	saldosiinvbodegadefault = ? "
+            + " limit 1 ";
     ps = conP.prepareStatement(sSaldoIniSaldosInv);
     ps.setString(1, codigoProducto.trim().toUpperCase());
     ps.setString(2, codigoBodega.trim());
-    rs = ps.executeQuery();
+    ResultSet rs = ps.executeQuery();
     while (rs.next()) {
       b.setCodigo(rs.getString("saldosiinvbodegadefault").trim());
       b.setCantidad(rs.getBigDecimal("saldosiinvcantidad"));
@@ -397,12 +258,15 @@ public class DatosDAO {
     return b;
   }
 
-  public Bodega getSaldoMovAnt(String codigoProducto, String codigoBodega, Date fecha) throws ClassNotFoundException, SQLException {
+  Bodega getSaldoMovAnt(String codigoProducto, String codigoBodega, Date fecha) throws SQLException {
     Bodega b = new Bodega();
 
     ResultSet rs;
     PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
+    String sSaldoMovAnt = " select productoscodigo,tbodcodigo,kardexstock,kardexcostopromedio,kardexcostototalstock "
+            + " from	kardex where productoscodigo=? and kardexfecha < ? and tbodcodigo = ? "
+            + " order	by kardexfecha desc, kardexcodigosec desc limit 1 ";
     ps = conP.prepareStatement(sSaldoMovAnt);
     ps.setString(1, codigoProducto.trim().toUpperCase());
     ps.setDate(2, fecha);
@@ -419,18 +283,25 @@ public class DatosDAO {
     return b;
   }
 
-  public ArrayList getFactores(String codigoProducto, Date fechaIni, Date fechaFin)
-          throws ClassNotFoundException, SQLException {
+  ArrayList<FactorCosto> getFactores(String codigoProducto, Date fechaIni, Date fechaFin)
+          throws SQLException {
     ArrayList<FactorCosto> aFac = new ArrayList<>();
 
-    ResultSet rs;
-    PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
-    ps = conP.prepareStatement(sFactores);
-    ps.setDate(1, fechaIni);
-    ps.setDate(2, fechaFin);
-    ps.setString(3, codigoProducto.trim().toUpperCase());
-    rs = ps.executeQuery();
+    String sFactores = "select o.ordpronumero,p.productoscodigo,p.tscatcodigo,f.tscatmanodeobra,f.tscatggproduccion,f.tscatgas, "
+            + "	o.ordpronumpersonas,o.ordprohorasproduccion,o.ordpronumperss,o.ordprohorasprods, "
+            + "	o.ordpronumpersa,o.ordprohorasproda,o.ordpronumperst,o.ordprohorasprodt "
+            + "          from productos p, tscat f, ordpro o, noting i "
+            + "          where p.tscatcodigo = f.tscatcodigo "
+            + "          and p.productoscodigo = o.productoscodigo "
+            + "          and o.ordpronumero = i.notingcegnum "
+            + "          and i.notingcodigodiv = '004' "
+            + "          and trim(i.notingtipo) ='PRODUCCION' "
+            + "          and i.notingfecha>= ? "
+            + "          and i.notingfecha<= ? "
+            + "          and o.productoscodigo = ? ";
+    PreparedStatement ps = getPreparedStatement(codigoProducto, fechaIni, fechaFin, conP, sFactores);
+    ResultSet rs = ps.executeQuery();
     while (rs.next()) {
       FactorCosto ft = new FactorCosto();
       ft.setOrdenNumero(rs.getInt("ordpronumero"));
@@ -455,14 +326,28 @@ public class DatosDAO {
     return aFac;
   }
 
-  public ArrayList getMateriales(String codigoProducto, Date fechaIni, Date fechaFin)
-          throws ClassNotFoundException, SQLException {
+  ArrayList<Materiales> getMateriales(String codigoProducto) throws SQLException {
 
     ArrayList<Materiales> aMats = new ArrayList<>();
 
     ResultSet rs;
     PreparedStatement ps;
     Connection conP = poolP.getDataSource().getConnection();
+    String sMaterialesProduccion = " select o.ordpronumero,o.productoscodigo as productoc,d.productoscodigo as productod, "
+            + "	p.tcatcodigo,d.detntecantidad,d.detntepreciounitario, "
+            + "	c.notegrnumero,c.notegrcreateuser,c.notegrcodigodiv "
+            + " from notegr c, notegrdetnte d, productos p, ordpro o\n"
+            + " where c.notegrcodigodiv = '004' "
+            + " and c.notegrcodigodiv = d.notegrcodigodiv "
+            + " and c.notegrtipo = 'PRODUCCION' "
+            + " and c.notegrnumero = d.notegrnumero "
+            + " and c.notegrcreateuser = d.notegrcreateuser "
+            + " and p.productoscodigo = d.productoscodigo "
+            + " and o.ordpronumero = CASE	WHEN substring(trim(c.notegrnumorden) from 1 for 1) = 'O' THEN to_number(substring(trim(c.notegrnumorden) from 3), '999999999')::int "
+            + "				ELSE to_number(trim(c.notegrnumorden), '9999999999')::int "
+            + "		     END "
+            + " and o.productoscodigo = ? "
+            + " order by o.ordpronumero ";
     ps = conP.prepareStatement(sMaterialesProduccion);
     ps.setString(1, codigoProducto);
     rs = ps.executeQuery();
@@ -484,10 +369,14 @@ public class DatosDAO {
     return aMats;
   }
 
-  public ArrayList<Usuarios> getUsuariosSIP() throws ClassNotFoundException, SQLException {
+  ArrayList<Usuarios> getUsuariosSIP() throws SQLException {
     ArrayList<Usuarios> aUsers = new ArrayList<>();
     PreparedStatement ps;
     Connection conM = poolM.getDataSource().getConnection();
+    String sUsersSIP = "select "
+            + "  id, "
+            + "  usuario "
+            + "from usuarios ";
     ps = conM.prepareStatement(sUsersSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -504,10 +393,16 @@ public class DatosDAO {
     return aUsers;
   }
 
-  public ArrayList<Division> getDivisionesSIP() throws ClassNotFoundException, SQLException {
+  ArrayList<Division> getDivisionesSIP() throws SQLException {
     ArrayList<Division> lista = new ArrayList<>();
     PreparedStatement ps;
     Connection conM = poolM.getDataSource().getConnection();
+    String sDivisionSIP = "select "
+            + "  id, "
+            + "  idmarketsoft, "
+            + "  descripcion,\n"
+            + "  status\n"
+            + "from divisiones ";
     ps = conM.prepareStatement(sDivisionSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -524,10 +419,17 @@ public class DatosDAO {
     return lista;
   }
 
-  public ArrayList<MovimientoInv> getTiposMovSIP() throws ClassNotFoundException, SQLException {
+  ArrayList<MovimientoInv> getTiposMovSIP() throws SQLException {
     ArrayList<MovimientoInv> lista = new ArrayList<>();
     PreparedStatement ps;
     Connection conM = poolM.getDataSource().getConnection();
+    String sTipoMovimientosSIP = "select "
+            + "  id, "
+            + "  descripcion, "
+            + "  documento, "
+            + "  status "
+            + "from tiposmovimientosinv "
+            + " where status = 'A' ";
     ps = conM.prepareStatement(sTipoMovimientosSIP);
     ResultSet rs = ps.executeQuery();
 
@@ -544,15 +446,15 @@ public class DatosDAO {
     return lista;
   }
 
-  public int saveChanges(ArrayList<Kardex> aKardex, Date fechaIni, Date fechaFin)
-          throws SQLException, ClassNotFoundException {
+  int saveChanges(ArrayList<Kardex> aKardex, Date fechaIni, Date fechaFin)
+          throws SQLException {
     int rAfectados = 0;
-    int rEliminados = 0;
+    int rEliminados;
     int maxKardexSec = 0;
     int cNoting = 0;
     int cNotIngdet = 0;
     int cNotIngdetSip = 0;
-    int cNotEgr = 0;
+    int cNotEgr;
     int cNotegrdet = 0;
     int cNotegrdetSip = 0;
 
@@ -566,20 +468,21 @@ public class DatosDAO {
     try {
 
       //Se eliminan datos de kardex
+      String dKardex = " delete from kardex where kardexfecha>= ? and kardexfecha<= ? ";
       ps = conP.prepareStatement(dKardex);
       ps.setDate(1, fechaIni);
       ps.setDate(2, fechaFin);
       rEliminados = ps.executeUpdate();
 
       //Se obtiene el registro maximo de kardexcodigo sec;
+      String sMaxKardexCodigo = " select max(kardexcodigosec) as maxreg from kardex ";
       ps = conP.prepareStatement(sMaxKardexCodigo);
       ResultSet rs = ps.executeQuery();
       while (rs.next()) {
         maxKardexSec = rs.getInt("maxreg");
       }
-
       rs.close();
-      
+
       //Se ingresan datos al kardex;
       maxKardexSec++;
       for (Kardex k : aKardex) {
@@ -588,6 +491,24 @@ public class DatosDAO {
         hora = calendario.get(Calendar.HOUR_OF_DAY);
         minutos = calendario.get(Calendar.MINUTE);
         segundos = calendario.get(Calendar.SECOND);
+
+        String iKardex = " INSERT INTO public.kardex( "
+                + "            kardexcodigodiv, kardexanno, kardextipotrx, kardexnumero, kardexlinea, "
+                + "            kardexcodigosec, kardexorden, kardexfecha, kardexhora, productoscodigo, "
+                + "            tbodcodigo, kardexlote, kardexcaducidad, kardexdescripcion, kardextipo, "
+                + "            kardexcodigoven1, kardexpreciocompra, kardexprecioventa, kardexvalordescuento, "
+                + "            kardexcantidad, kardexcostopromedio, kardexcostototal, kardexstock, "
+                + "            kardexcantidad_a, kardexcostopromedio_a, kardexcostototalstock, "
+                + "            kardexcreateuser, kardexcreatedate, kardexcreatepgm, kardexupdateuser, "
+                + "            kardexupdatedate, kardexupdatetime, kardexupdatepgm, kardexusuario) "
+                + "    VALUES (?, ?, ?, ?, ?, "
+                + "            ?, ?, ?, ?, ?, "
+                + "            ?, ?, ?, ?, ?, "
+                + "            ?, ?, ?, ?, "
+                + "            ?, ?, ?, ?, "
+                + "            ?, ?, ?, "
+                + "            ?, CURRENT_DATE, ?, ?, "
+                + "            CURRENT_DATE, ?, ?, ?) ";
 
         ps = conP.prepareStatement(iKardex);
         ps.setString(1, k.getKardexcodigodiv().trim());
@@ -627,6 +548,12 @@ public class DatosDAO {
 
         if (k.getKardextipotrx().trim().equals("NTI")) {
           if (k.getKardextipo().trim().equals("PRODUCCION") && k.getKardexfecha().compareTo(fechaCerrado) > 0) {
+            String uNotIng = " update noting "
+                    + " set notingpreciototal = ? "
+                    + " where trim(notingcodigodiv) = ? "
+                    + " and  notingnumero = ? "
+                    + " and trim(notingcreateuser) = ? "
+                    + " and trim(notingtipo)= ? ";
             ps = conP.prepareStatement(uNotIng);
             ps.setBigDecimal(1, k.getKardexcostototal());
             ps.setString(2, k.getKardexcodigodiv().trim());
@@ -635,19 +562,30 @@ public class DatosDAO {
             ps.setString(5, k.getKardextipo().trim());
             cNoting += ps.executeUpdate();
 
-            ps = conP.prepareStatement(uNotIngDet);
-            ps.setBigDecimal(1, k.getKardexpreciocompra());
-            ps.setBigDecimal(2, k.getKardexcostototal());
-            ps.setInt(3, k.getKardexnumero());
+            String uNotIngDet = " update notingdetnti "
+                    + " set detntipreciounitario = ?, detntipreciototal = ? "
+                    + " where notingnumero= ? "
+                    + "  and trim(notingcreateuser)= ? "
+                    + " and trim(notingcodigodiv)= ?"
+                    + " and trim(productoscodigo)  = ? ";
+
+            ps = getPreparedStatement(conP, k, uNotIngDet);
             ps.setString(4, k.getKardexusuario().trim());
             ps.setString(5, k.getKardexcodigodiv().trim());
             ps.setString(6, k.getProductoscodigo().trim());
             cNotIngdet += ps.executeUpdate();
 
-            ps = conM.prepareStatement(uIngresInvDetalleSip);
-            ps.setBigDecimal(1, k.getKardexpreciocompra());
-            ps.setBigDecimal(2, k.getKardexcostototal());
-            ps.setInt(3, k.getKardexnumero());
+            String uIngresInvDetalleSip = "update ingresoinvdetalle "
+                    + "set costoUnitario = ?, "
+                    + "  costoTotal = ? "
+                    + "where idIngresoInv = ? "
+                    + "and idUsuario = ? "
+                    + "and idDivision = ? "
+                    + "and codigoProducto = ? "
+                    + "      and cantidad = ? "
+                    + "and status = 'A'";
+
+            ps = getPreparedStatement(conM, k, uIngresInvDetalleSip);
             ps.setInt(4, k.getIdUsuario());
             ps.setInt(5, k.getIdDivision());
             ps.setString(6, k.getProductoscodigo().trim());
@@ -656,6 +594,13 @@ public class DatosDAO {
           }
         }
         if (k.getKardextipotrx().trim().equals("NTE")) {
+          String uNotEgrDet = " UPDATE notegrdetnte "
+                  + "SET detntepreciounitario = ?, detntepreciototal = ?, detntek2cost = ? "
+                  + "WHERE notegrnumero = ? "
+                  + "      AND trim(notegrcreateuser) =? "
+                  + "      AND trim(notegrcodigodiv) =? "
+                  + "      AND trim(productoscodigo) = ? "
+                  + "      AND detnteline = ? ";
           ps = conP.prepareStatement(uNotEgrDet);
           ps.setBigDecimal(1, k.getKardexpreciocompra());
           ps.setBigDecimal(2, k.getKardexcostototal());
@@ -667,24 +612,38 @@ public class DatosDAO {
           ps.setInt(8, k.getKardexlinea());
           cNotegrdet += ps.executeUpdate();
 
-          ps = conM.prepareStatement(uEgresoInvDetalleSip);
-          ps.setBigDecimal(1, k.getKardexpreciocompra());
-          ps.setBigDecimal(2, k.getKardexcostototal());
-          ps.setInt(3, k.getKardexnumero());
+          String uEgresoInvDetalleSip = "update egresoinvdetalle "
+                  + "set costoUnitario = ?, "
+                  + "  costoTotal      = ? "
+                  + "where idEgresoInv = ? "
+                  + "      and idUsuario = ? "
+                  + "      and idDivision = ? "
+                  + "      and codigoProducto = ?"
+                  + "      and cantidad = ? "
+                  + "      and status = 'A' ";
+
+          ps = getPreparedStatement(conM, k, uEgresoInvDetalleSip);
           ps.setInt(4, k.getIdUsuario());
           ps.setInt(5, k.getIdDivision());
           ps.setString(6, k.getProductoscodigo().trim());
           ps.setBigDecimal(7, k.getKardexcantidad().negate());
-
-//          System.out.println("precio de compra: " + k.getKardexpreciocompra()
-//                  + " Precio Total: " + k.getKardexcostototal() + " Numero: " + k.getKardexnumero()
-//                  + " idUsuario: " + k.getIdUsuario() + " idDivision: " + k.getIdDivision()
-//                  + " codigoProducto: " + k.getProductoscodigo().trim()
-//                  + " cantidad: " + k.getKardexcantidad());
           cNotegrdetSip += ps.executeUpdate();
         }
       }
 
+      String uNotEgrs = "UPDATE notegr c "
+              + "SET notegrpreciototal = (SELECT CASE "
+              + "                                WHEN count(*) = 0 "
+              + "                                  THEN 0.00 "
+              + "                                ELSE sum(d.detntepreciototal) "
+              + "                                END "
+              + "                         FROM notegrdetnte d "
+              + "                         WHERE c.notegrnumero = d.notegrnumero "
+              + "                               AND trim(c.notegrcreateuser) = trim(d.notegrcreateuser) "
+              + "                               AND trim(c.notegrcodigodiv) = trim(d.notegrcodigodiv)) "
+              + "WHERE c.notegrfecha >= ? "
+              + "      AND c.notegrfecha <= ? "
+              + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
       ps = conP.prepareStatement(uNotEgrs);
       ps.setDate(1, fechaIni);
       ps.setDate(2, fechaFin);
@@ -705,6 +664,8 @@ public class DatosDAO {
       conM.commit();
       conM.close();
 
+      return rAfectados;
+
     } catch (SQLException ex) {
       conP.rollback();
       conP.close();
@@ -713,11 +674,26 @@ public class DatosDAO {
       conM.close();
 
       ex.printStackTrace();
-      rAfectados = -1;
+      return -1;
     }
-
-    return rAfectados;
-
   }
 
+  private PreparedStatement getPreparedStatement(String codProducto, Date fechaIni, Date fechaFin, Connection conP,
+          String sDocumentos) throws SQLException {
+    PreparedStatement ps;
+    ps = conP.prepareStatement(sDocumentos);
+    ps.setDate(1, fechaIni);
+    ps.setDate(2, fechaFin);
+    ps.setString(3, codProducto.trim().toUpperCase());
+    return ps;
+  }
+
+  private PreparedStatement getPreparedStatement(Connection conP, Kardex k, String uNotIngDet) throws SQLException {
+    PreparedStatement ps;
+    ps = conP.prepareStatement(uNotIngDet);
+    ps.setBigDecimal(1, k.getKardexpreciocompra());
+    ps.setBigDecimal(2, k.getKardexcostototal());
+    ps.setInt(3, k.getKardexnumero());
+    return ps;
+  }
 }

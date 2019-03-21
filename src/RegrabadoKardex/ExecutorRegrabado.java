@@ -5,8 +5,6 @@ import RegrabadoKardex.Models.Usuarios;
 import RegrabadoKardex.Models.Kardex;
 import RegrabadoKardex.Models.MovimientoInv;
 import RegrabadoKardex.Models.Division;
-import RegrabadoKardex.DB.ConexionPoolMysql;
-import RegrabadoKardex.DB.ConexionPoolPostgres;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -20,11 +18,12 @@ import java.util.concurrent.Future;
 
 public class ExecutorRegrabado implements Callable<ArrayList> {
 
-  Movimiento m;
-  Date fechaIni;
-  Date fechaFin;
+  private Movimiento m;
+  private Date fechaIni;
+  private Date fechaFin;
+  private static ArrayList<Kardex> aDocs = new ArrayList<>();
 
-  public ExecutorRegrabado(Movimiento m, Date fechaIni, Date fechaFin) {
+  private ExecutorRegrabado(Movimiento m, Date fechaIni, Date fechaFin) {
     this.m = m;
     this.fechaIni = fechaIni;
     this.fechaFin = fechaFin;
@@ -36,12 +35,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     return rp.regrabadoProducto();
   }
 
-  private static ArrayList<Kardex> aDocs = new ArrayList<>();
-  private static ArrayList<Movimiento> aMovs = new ArrayList<>();
-
-  public static void main(String[] args)
-          throws ParseException, ClassNotFoundException, SQLException,
-          InterruptedException, ExecutionException {
+  public static void main(String[] args) throws ParseException, SQLException, InterruptedException, ExecutionException {
 
     String iniDate = "01-01-2019";
     String finDate = "31-12-2019";
@@ -52,29 +46,29 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     Date fechaFin = new Date(dateFin.getTime());
 
     DatosDAO DB = new DatosDAO();
-    aMovs = DB.getMovimientos(fechaIni, fechaFin);
+    ArrayList<Movimiento> aMovs = DB.getMovimientos(fechaIni, fechaFin);
 
     ExecutorService executorService = Executors.newWorkStealingPool();
-    Future<ArrayList>[] futures = new Future[aMovs.size()];
+    Future[] futures = new Future[aMovs.size()];
     for (int i = 0; i < aMovs.size(); i++) {
       Movimiento m = aMovs.get(i);
       futures[i] = executorService.submit(new ExecutorRegrabado(m, fechaIni, fechaFin));
     }
     executorService.shutdown();
 
-    for (int i = 0; i < futures.length; i++) {
-      ArrayList<Kardex> data = futures[i].get();
+    for (Future future : futures) {
+      ArrayList<Kardex> data = (ArrayList<Kardex>) future.get();
       if (data == null) {
-        System.out.println("error en data" + futures[i].get());
+        System.out.println("Error en data" + future.get());
+      } else {
+        aDocs.addAll(data);
       }
-      aDocs.addAll(data);
     }
 
     ArrayList<Usuarios> usuarios = DB.getUsuariosSIP();
     ArrayList<Division> divs = DB.getDivisionesSIP();
     ArrayList<MovimientoInv> movs = DB.getTiposMovSIP();
 
-    System.out.println("Total de registros en kardex : " + aDocs.size());
     System.out.printf("%-10s%-12s%-10s%-10s%-12s%-18s%-15s"
             + "%-14s%-14s%-22s"
             + "%-14s%-14s%-22s"
@@ -120,8 +114,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
 
     System.out.println("Total de registros en kardex : " + aDocs.size());
     System.out.println("Actualizando Base de datos");
-    int rAfectados = DB.saveChanges(aDocs, fechaIni, fechaFin);
-    System.out.println("Se actualizaron " + rAfectados + " registros");
+		int rAfectados = DB.saveChanges(aDocs, fechaIni, fechaFin);
+		System.out.println("Se actualizaron " + rAfectados + " registros");
   }
-
 }
