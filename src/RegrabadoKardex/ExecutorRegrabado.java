@@ -18,9 +18,9 @@ import java.util.concurrent.Future;
 
 public class ExecutorRegrabado implements Callable<ArrayList> {
 
-  private Movimiento m;
-  private Date fechaIni;
-  private Date fechaFin;
+  private final Movimiento m;
+  private final Date fechaIni;
+  private final Date fechaFin;
   private static ArrayList<Kardex> aDocs = new ArrayList<>();
 
   private ExecutorRegrabado(Movimiento m, Date fechaIni, Date fechaFin) {
@@ -35,10 +35,11 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     return rp.regrabadoProducto();
   }
 
-  public static void main(String[] args) throws ParseException, SQLException, InterruptedException, ExecutionException {
+  public static void main(String[] args) throws ParseException, SQLException,
+          InterruptedException, ExecutionException {
 
-    String iniDate = "01-01-2019";
-    String finDate = "31-12-2019";
+    String iniDate = "01-04-2020";
+    String finDate = "31-12-2020";
     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
     java.util.Date dateIni = sdf.parse(iniDate);
     java.util.Date dateFin = sdf.parse(finDate);
@@ -48,7 +49,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
     DatosDAO DB = new DatosDAO();
     ArrayList<Movimiento> aMovs = DB.getMovimientos(fechaIni, fechaFin);
 
-    ExecutorService executorService = Executors.newWorkStealingPool();
+    ExecutorService executorService = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
     Future[] futures = new Future[aMovs.size()];
     for (int i = 0; i < aMovs.size(); i++) {
       Movimiento m = aMovs.get(i);
@@ -114,7 +115,7 @@ public class ExecutorRegrabado implements Callable<ArrayList> {
 
     System.out.println("Total de registros en kardex : " + aDocs.size());
     System.out.println("Actualizando Base de datos");
-		int rAfectados = DB.saveChanges(aDocs, fechaIni, fechaFin);
-		System.out.println("Se actualizaron " + rAfectados + " registros");
+    int rAfectados = DB.saveChanges(aDocs, fechaIni, fechaFin);
+    System.out.println("Se actualizaron " + rAfectados + " registros");
   }
 }

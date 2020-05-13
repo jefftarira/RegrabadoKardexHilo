@@ -14,7 +14,7 @@ public class PoolPostgres {
 //  private final String PASSW = "Csdla2008!";
 
   // PRODUCCION
-  private final String SERVER = "192.168.0.4";
+  private final String SERVER = "192.168.22.4";
   private final String DBNAME = "PlastimetV10P";
   private final String PORT = "5432";
   private final String USER = "postgres";

@@ -644,6 +644,7 @@ public class DatosDAO {
               + "WHERE c.notegrfecha >= ? "
               + "      AND c.notegrfecha <= ? "
               + "      AND (c.notegrcontab = 'SI' OR c.notegrcontab = 'PO')";
+      
       ps = conP.prepareStatement(uNotEgrs);
       ps.setDate(1, fechaIni);
       ps.setDate(2, fechaFin);

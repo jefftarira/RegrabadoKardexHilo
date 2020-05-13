@@ -69,7 +69,7 @@ public class RegrabadoProducto1 {
         sb.setCostoT(k.getKardexcostototalstock().setScale(2, RoundingMode.HALF_UP));
         updateSaldoInicialBodega(k);
 
-        // ************************** PROCESO ESPECIAL POR TRANSFERENCIA *********************************** \\
+        // ************************** PROCESO POR TRANSFERENCIA *********************************** \\
         if (k.getKardextipo().trim().equals("TRANSFERENCIA")) {
           Kardex kt = new Kardex(
                   k.getKardexcodigodiv(),
@@ -100,13 +100,16 @@ public class RegrabadoProducto1 {
           SaldoBodega sbt = comprobarSaldoInicial(kt);
           kt.setKardexstock(sbt.getSaldo().add(kt.getKardexcantidad()));
           if (kt.getKardexstock().compareTo(BigDecimal.ZERO) == 1) {
-            kt.setKardexcostototalstock(sbt.getCostoT().add(kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())).setScale(2, RoundingMode.HALF_UP));
-            kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(kt.getKardexstock(), 6, RoundingMode.HALF_UP));
+            kt.setKardexcostototalstock(sbt.getCostoT().add(
+                    kt.getKardexpreciocompra().multiply(kt.getKardexcantidad())).setScale(2, RoundingMode.HALF_UP));
+            kt.setKardexcostopromedio(kt.getKardexcostototalstock().divide(
+                    kt.getKardexstock(), 6, RoundingMode.HALF_UP));
           } else {
             kt.setKardexcostototalstock(BigDecimal.ZERO);
             kt.setKardexcostopromedio(kt.getKardexpreciocompra().setScale(6, RoundingMode.HALF_UP));
           }
-          kt.setKardexcostototal(kt.getKardexcantidad().multiply(kt.getKardexpreciocompra()).setScale(2, RoundingMode.HALF_UP));
+          kt.setKardexcostototal(kt.getKardexcantidad().multiply(
+                  kt.getKardexpreciocompra()).setScale(2, RoundingMode.HALF_UP));
           kt.setKardexcantidad_a(sbt.getSaldo().setScale(5, RoundingMode.HALF_UP));
           kt.setKardexcostopromedio_a(sbt.getCostoU().setScale(6, RoundingMode.HALF_UP));
           updateSaldoInicialBodega(kt);
@@ -122,6 +125,10 @@ public class RegrabadoProducto1 {
           k.setKardexpreciocompra(CostoProduccion.divide(k.getKardexcantidad(), 6, RoundingMode.HALF_UP));
         }
 
+//        if (k.getKardextipo().trim().equals("DEVOLUCION")
+//                && k.getKardexfecha().compareTo(fechaCerrado) > 0) {
+//          k.setKardexpreciocompra(sb.getCostoU().setScale(6, RoundingMode.HALF_UP));
+//        }
         k.setKardexstock(sb.getSaldo().add(k.getKardexcantidad()).setScale(6, RoundingMode.HALF_UP));
         if ((k.getKardexstock().compareTo(BigDecimal.ZERO)) == 1) {
           if (sb.getSaldo().multiply(sb.getCostoU()).compareTo(BigDecimal.ZERO) == 1) {
@@ -275,6 +282,7 @@ public class RegrabadoProducto1 {
     }
     costo = costoMateriales.add(costoCif.add(costoMod.add(costoGas)));
     return costo;
+
   }
 
 //	private BigDecimal getCostoProduccionM2(String codProducto, int orden)

@@ -8,18 +8,18 @@ import java.sql.SQLException;
 public class ConexionMysql {
 
   // DESARROLLO
-    private final String SERVER = "localhost";
-    private final String DBNAME = "plastimet";
-    private final String PORT = "3306";
-    private final String USER = "user";
-    private final String PASSW = "12345678";
+//    private final String SERVER = "localhost";
+//    private final String DBNAME = "plastimet";
+//    private final String PORT = "3306";
+//    private final String USER = "user";
+//    private final String PASSW = "12345678";
   
   //  PRODUCCION
-//  private String SERVER = "192.168.0.7";
-//  private final String DBNAME = "plastimet";
-//  private final String PORT = "3306";
-//  private final String USER = "user";
-//  private final String PASSW = "PlastDbUser@1984";
+  private String SERVER = "192.168.22.7";
+  private final String DBNAME = "plastimet";
+  private final String PORT = "3306";
+  private final String USER = "user";
+  private final String PASSW = "PlastDbUser@1984";
   private Connection con;
 
   public ConexionMysql() {
@@ -28,7 +28,7 @@ public class ConexionMysql {
 
   public void conectar() throws ClassNotFoundException, SQLException {
     Class.forName("com.mysql.jdbc.Driver");
-    String url = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME;
+    String url = "jdbc:mysql://" + SERVER + ":" + PORT + "/" + DBNAME + "?useSSL=false";
     con = DriverManager.getConnection(url, USER, PASSW);
   }
 

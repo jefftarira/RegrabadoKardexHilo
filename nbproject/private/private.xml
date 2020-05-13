@@ -4,12 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/ExecutorRegrabado.java</file>
-            <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/Models/MovimientoInv.java</file>
-            <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/Models/SaldoBodega.java</file>
             <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/DB/PoolMysql.java</file>
             <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/DB/PoolPostgres.java</file>
-            <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/RegrabadoProducto1.java</file>
-            <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/Models/Movimiento.java</file>
             <file>file:/C:/Desarrollo%20Plastimet/RegrabadoKardexHilo/src/RegrabadoKardex/DatosDAO.java</file>
         </group>
     </open-files>
